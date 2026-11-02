@@ -67,6 +67,8 @@ const settingsItems = [
 export function AppSidebar() {
   const location = useLocation()
   const canReadRoles = useCan(PERMISSIONS.roleRead)
+  const canReadReports = useCan(PERMISSIONS.report)
+  const visibleMonitoring = monitoringItems.filter((item) => item.url !== '/report' || canReadReports)
   const visibleSettings = settingsItems.filter((item) => item.url !== '/role' || canReadRoles)
 
   return (
@@ -88,9 +90,10 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {monitoringItems.map((item) => {
+              {visibleMonitoring.map((item) => {
                 const isActive =
                   location.pathname === item.url ||
+                  location.pathname.startsWith(`${item.url}/`) ||
                   (item.url === '/dashboard' && (location.pathname === '/' || location.pathname === '/dashboard'))
                 return (
                   <SidebarMenuItem key={item.title}>
