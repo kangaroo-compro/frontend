@@ -4,6 +4,7 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LoginPage } from '@/pages/login-page'
 import { DashboardPage } from '@/pages/dashboard-page'
 import { MonitoringPage } from '@/pages/monitoring-page'
+import { RolesPage } from '@/pages/roles-page'
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
           { path: '/report', element: <DashboardPage /> },
           { path: '/manage-machine', element: <DashboardPage /> },
           { path: '/profile', element: <DashboardPage /> },
+          { path: '/role', element: <RolesPage /> },
         ],
       },
     ],

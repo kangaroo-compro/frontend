@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   LogOut,
   Radio,
+  ShieldCheck,
   User,
 } from 'lucide-react'
 import {
@@ -23,6 +24,8 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
+import { PERMISSIONS } from '@/features/accounts/permissions'
+import { useCan } from '@/features/auth/access'
 import { signOutEverywhere } from '@/features/auth/session'
 
 const monitoringItems = [
@@ -54,10 +57,17 @@ const settingsItems = [
     url: '/profile',
     icon: User,
   },
+  {
+    title: 'Roles',
+    url: '/role',
+    icon: ShieldCheck,
+  },
 ]
 
 export function AppSidebar() {
   const location = useLocation()
+  const canReadRoles = useCan(PERMISSIONS.roleRead)
+  const visibleSettings = settingsItems.filter((item) => item.url !== '/role' || canReadRoles)
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -108,7 +118,7 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {settingsItems.map((item) => {
+              {visibleSettings.map((item) => {
                 const isActive = location.pathname === item.url
                 return (
                   <SidebarMenuItem key={item.title}>
