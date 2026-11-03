@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { Download } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
@@ -12,6 +12,7 @@ import { formatBytes } from '@/lib/format'
 import { listReports, reportDownloadUrl } from '../api'
 import { useReportEvents } from '../hooks/use-report-events'
 import type { Report } from '../types'
+import * as React from 'react'
 
 const PAGE_SIZE = 10
 
@@ -33,11 +34,11 @@ function StatusBadge({ report }: { report: Report }) {
 export function ReportHistory() {
   useReportEvents()
 
-  const reports = useInfiniteQuery({
-    queryKey: ['reports'],
-    queryFn: ({ pageParam }) => listReports(PAGE_SIZE, pageParam),
-    initialPageParam: 0,
-    getNextPageParam: ({ meta }) => (meta.offset + meta.limit < meta.total ? meta.offset + meta.limit : undefined),
+  const [page, setPage] = React.useState(1)
+  
+  const reports = useQuery({
+    queryKey: ['reports', page],
+    queryFn: () => listReports(PAGE_SIZE, (page - 1) * PAGE_SIZE),
   })
 
   const download = useMutation({
@@ -115,16 +116,16 @@ export function ReportHistory() {
           </Alert>
         )}
         {reports.isSuccess && (
-          <DataTable
-            data={reports.data.pages.flatMap((p) => p.reports)}
+          <DataTable<Report>
+            data={reports.data.reports}
             columns={columns}
             rowKey={(r) => r.id}
             empty="No reports yet."
-            meta={reports.data.pages.at(-1)?.meta}
-            onLoadMore={() => reports.fetchNextPage()}
-            loadingMore={reports.isFetchingNextPage}
-          />
-        )}
+            meta={reports.data.meta}
+            page={page}
+            onPageChange={setPage}
+            />
+            )}
       </CardContent>
     </Card>
   )

@@ -7,6 +7,7 @@ import { MonitoringPage } from '@/pages/monitoring-page'
 import { ReportNewPage } from '@/pages/report-new-page'
 import { ReportPage } from '@/pages/report-page'
 import { RolesPage } from '@/pages/roles-page'
+import { UsersPage } from '@/pages/users-page'
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
           { path: '/manage-machine', element: <DashboardPage /> },
           { path: '/profile', element: <DashboardPage /> },
           { path: '/role', element: <RolesPage /> },
+          { path: '/users', element: <UsersPage /> },
         ],
       },
     ],
