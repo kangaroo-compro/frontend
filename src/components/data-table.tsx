@@ -1,32 +1,61 @@
 import type { ReactNode } from 'react'
-import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 export type Column<T> = {
   key: string
   header: ReactNode
   cell: (row: T) => ReactNode
-  /** Applied to the header and to every cell of the column. */
   className?: string
 }
 
-/** Paging info the Manager returns next to a list. */
-export type TableMeta = { limit: number; offset: number; total: number }
+export type TableMeta = {
+  limit: number
+  offset: number
+  total: number
+}
 
 type Props<T> = {
   data: T[]
   columns: Column<T>[]
   rowKey: (row: T) => string
-  /** Rendered in place of the rows when there are none. */
   empty: ReactNode
-  /** With meta the table shows "loaded of total" and, while more rows exist, a Load more button. */
   meta?: TableMeta
-  onLoadMore?: () => void
-  loadingMore?: boolean
+  page: number
+  onPageChange: (page: number) => void
 }
 
-export function DataTable<T>({ data, columns, rowKey, empty, meta, onLoadMore, loadingMore }: Props<T>) {
-  const hasMore = meta !== undefined && data.length < meta.total
+export function DataTable<T>({
+  data,
+  columns,
+  rowKey,
+  empty,
+  meta,
+  page,
+  onPageChange,
+}: Props<T>) {
+  const totalPages = meta ? Math.ceil(meta.total / meta.limit) : 1
+  const startPage = Math.max(1, Math.min(page - 1, totalPages - 2))
+
+  const visiblePages = Array.from(
+    { length: Math.min(3, totalPages) },
+    (_, index) => startPage + index,
+  )
 
   return (
     <div className="flex flex-col gap-3">
@@ -40,6 +69,7 @@ export function DataTable<T>({ data, columns, rowKey, empty, meta, onLoadMore, l
             ))}
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {data.map((row) => (
             <TableRow key={rowKey(row)}>
@@ -50,26 +80,107 @@ export function DataTable<T>({ data, columns, rowKey, empty, meta, onLoadMore, l
               ))}
             </TableRow>
           ))}
+
           {data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+              <TableCell
+                colSpan={columns.length}
+                className="text-center text-muted-foreground"
+              >
                 {empty}
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      {meta && (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-sm text-muted-foreground">
-            {data.length} of {meta.total}
-          </span>
-          {hasMore && onLoadMore && (
-            <Button variant="outline" onClick={onLoadMore} disabled={loadingMore}>
-              {loadingMore ? 'Loading…' : 'Load more'}
-            </Button>
-          )}
-        </div>
+
+      {meta && totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault()
+                  if (page > 1) onPageChange(page - 1)
+                }}
+                aria-disabled={page === 1}
+                className={page === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+
+            {startPage > 1 && (
+              <>
+                <PaginationItem>
+                  <PaginationLink
+                    href="#"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      onPageChange(1)
+                    }}
+                  >
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+
+                {startPage > 2 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+              </>
+            )}
+
+            {visiblePages.map((pageNumber) => (
+              <PaginationItem key={pageNumber}>
+                <PaginationLink
+                  href="#"
+                  isActive={pageNumber === page}
+                  onClick={(event) => {
+                    event.preventDefault()
+                    onPageChange(pageNumber)
+                  }}
+                >
+                  {pageNumber}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            {startPage + visiblePages.length - 1 < totalPages && (
+              <>
+                {startPage + visiblePages.length < totalPages && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+
+                <PaginationItem>
+                  <PaginationLink
+                    href="#"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      onPageChange(totalPages)
+                    }}
+                  >
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              </>
+            )}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault()
+                  if (page < totalPages) onPageChange(page + 1)
+                }}
+                aria-disabled={page === totalPages}
+                className={page === totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
     </div>
   )

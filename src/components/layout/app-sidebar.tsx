@@ -58,6 +58,11 @@ const settingsItems = [
     icon: User,
   },
   {
+    title: 'Users',
+    url: '/users',
+    icon: User,
+  },
+  {
     title: 'Roles',
     url: '/role',
     icon: ShieldCheck,
@@ -68,8 +73,13 @@ export function AppSidebar() {
   const location = useLocation()
   const canReadRoles = useCan(PERMISSIONS.roleRead)
   const canReadReports = useCan(PERMISSIONS.report)
+  const canReadUsers = useCan(PERMISSIONS.userRead)
   const visibleMonitoring = monitoringItems.filter((item) => item.url !== '/report' || canReadReports)
-  const visibleSettings = settingsItems.filter((item) => item.url !== '/role' || canReadRoles)
+  const visibleSettings = settingsItems.filter((item) => {
+    if (item.url === '/users') return canReadUsers
+    if (item.url === '/role') return canReadRoles
+    return true
+  })
 
   return (
     <Sidebar collapsible="icon" className="border-r">
