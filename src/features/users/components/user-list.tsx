@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { DataTable, type Column } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,6 +16,7 @@ export function UserList() {
   const users = useQuery({
     queryKey: ['users', page],
     queryFn: () => listUsers(PAGE_SIZE, (page - 1) * PAGE_SIZE),
+    placeholderData: keepPreviousData,
   })
 
   const columns: Column<User>[] = [

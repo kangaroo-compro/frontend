@@ -94,7 +94,7 @@ export function DataTable<T>({
         </TableBody>
       </Table>
 
-      {meta && totalPages > 1 && (
+      {meta && meta.total > 0 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>
