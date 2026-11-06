@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useMutation } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { Download } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
@@ -39,6 +39,7 @@ export function ReportHistory() {
   const reports = useQuery({
     queryKey: ['reports', page],
     queryFn: () => listReports(PAGE_SIZE, (page - 1) * PAGE_SIZE),
+    placeholderData: keepPreviousData,
   })
 
   const download = useMutation({
