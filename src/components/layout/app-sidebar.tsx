@@ -8,6 +8,7 @@ import {
   Radio,
   ShieldCheck,
   User,
+  Users,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -60,7 +61,7 @@ const settingsItems = [
   {
     title: 'Users',
     url: '/users',
-    icon: User,
+    icon: Users,
   },
   {
     title: 'Roles',
@@ -83,7 +84,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="flex flex-row items-center justify-between p-4 border-b">
+      <SidebarHeader className="flex flex-row items-center justify-between border-b p-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2">
         <Link to="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-foreground">
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Radio className="size-4" aria-hidden />
@@ -93,7 +94,7 @@ export function AppSidebar() {
         <SidebarTrigger className="group-data-[collapsible=icon]:hidden" />
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4">
+      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0">
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Monitoring
@@ -154,7 +155,8 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t">
+      <SidebarFooter className="border-t p-4 group-data-[collapsible=icon]:p-2">
+        <SidebarTrigger className="mx-auto hidden group-data-[collapsible=icon]:inline-flex" />
         <Button
           variant="outline"
           size="sm"
