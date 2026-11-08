@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { ConfirmDeleteDialog } from '@/features/accounts/components/confirm-delete-dialog'
 import { useCan } from '@/features/auth/access'
 import { ConnectivityBadge } from '@/features/dashboard/components/machine-table'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { errorMessage } from '@/lib/api'
 import { NO_VALUE } from '@/lib/format'
 import { deleteMachine, listMachines } from '../api'
@@ -29,14 +30,9 @@ export function MachineList() {
 
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
-  const [debounced, setDebounced] = useState('')
+  const debounced = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
   const [editing, setEditing] = useState<Machine | 'new' | null>(null)
   const [deleting, setDeleting] = useState<Machine | null>(null)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(search.trim()), SEARCH_DEBOUNCE_MS)
-    return () => clearTimeout(timer)
-  }, [search])
 
   const machines = useQuery({
     queryKey: ['machines', 'list', page, debounced],
@@ -93,33 +89,30 @@ export function MachineList() {
   ]
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs">
-      <CardHeader className="flex flex-col gap-3 p-5 pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <CardTitle className="text-lg font-bold tracking-tight text-foreground">
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-bold tracking-tight">
           Registered Machines {machines.data ? `(${machines.data.meta.total})` : ''}
         </CardTitle>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input
-              aria-label="Search machine"
-              placeholder="Search Machine"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-              className="w-56 rounded-full pl-9"
-            />
-          </div>
+        <CardAction className="flex flex-wrap items-center gap-3">
+          <Input
+            aria-label="Search machine"
+            placeholder="Search Machine"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
+            className="w-56"
+          />
           {canCreate && (
             <Button onClick={() => setEditing('new')}>
               <Plus /> Add Machine
             </Button>
           )}
-        </div>
+        </CardAction>
       </CardHeader>
-      <CardContent className="p-5 pt-0">
+      <CardContent>
         {machines.isPending && <Skeleton className="h-40 w-full" />}
         {machines.isError && (
           <Alert variant="destructive">

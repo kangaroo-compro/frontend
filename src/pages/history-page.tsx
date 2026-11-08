@@ -97,8 +97,8 @@ export function HistoryPage() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {tiles.map((tile) => (
-              <Card key={tile.label} className="rounded-xl border bg-card shadow-xs">
-                <CardContent className="flex flex-col gap-3 p-5">
+              <Card key={tile.label}>
+                <CardContent className="flex flex-col gap-3">
                   <span className="text-sm text-muted-foreground">{tile.label}</span>
                   <span className="text-2xl font-bold tabular-nums text-foreground">{tile.value}</span>
                 </CardContent>

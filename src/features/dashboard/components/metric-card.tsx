@@ -16,8 +16,8 @@ interface MetricCardProps {
 
 export function MetricCard({ icon, label, value, condition, subtext }: MetricCardProps) {
   return (
-    <Card className="rounded-xl border bg-card shadow-xs">
-      <CardContent className="flex flex-col justify-between p-5 h-full space-y-4">
+    <Card>
+      <CardContent className="flex h-full flex-col justify-between gap-4">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           {icon}
           <span>{label}</span>

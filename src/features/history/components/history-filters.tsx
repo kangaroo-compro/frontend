@@ -1,6 +1,6 @@
 import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { Machine } from '@/features/machines/types'
@@ -53,8 +53,8 @@ export function HistoryFilters({ machines, value, onChange, onApply }: Props) {
   }
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs">
-      <CardContent className="flex flex-col gap-5 p-5">
+    <Card>
+      <CardContent className="flex flex-col gap-5">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-2">
             <Label htmlFor="history-machine">Machine</Label>
@@ -116,25 +116,24 @@ export function HistoryFilters({ machines, value, onChange, onApply }: Props) {
             </label>
           ))}
         </fieldset>
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
-            <Info className="size-4 shrink-0" aria-hidden />
-            Historical data is kept for the last 10 days. New readings appear here up to 15 minutes after they are
-            received.
-          </p>
-          <div className="flex items-center gap-3">
-            {problem && (
-              <span role="alert" className="text-xs text-destructive">
-                {problem}
-              </span>
-            )}
-            <Button type="button" onClick={onApply} disabled={problem !== null || value.machineId === ''}>
-              Apply Filters
-            </Button>
-          </div>
-        </div>
       </CardContent>
+      <CardFooter className="flex-wrap justify-between gap-3">
+        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Info className="size-4 shrink-0" aria-hidden />
+          Historical data is kept for the last 10 days. New readings appear here up to 15 minutes after they are
+          received.
+        </p>
+        <div className="flex items-center gap-3">
+          {problem && (
+            <span role="alert" className="text-xs text-destructive">
+              {problem}
+            </span>
+          )}
+          <Button type="button" onClick={onApply} disabled={problem !== null || value.machineId === ''}>
+            Apply Filters
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   )
 }

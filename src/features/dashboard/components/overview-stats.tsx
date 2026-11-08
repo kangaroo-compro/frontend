@@ -19,8 +19,8 @@ export function OverviewStats({ total, normal, abnormal, disconnected }: Props) 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {tiles.map((tile) => (
-        <Card key={tile.label} className="rounded-xl border bg-card shadow-xs">
-          <CardContent className="flex h-full flex-col justify-between gap-6 p-5">
+        <Card key={tile.label}>
+          <CardContent className="flex h-full flex-col justify-between gap-6">
             <span className="text-sm text-muted-foreground">{tile.label}</span>
             <span className="text-3xl font-bold tracking-tight text-foreground tabular-nums">
               {tile.value ?? NO_VALUE}

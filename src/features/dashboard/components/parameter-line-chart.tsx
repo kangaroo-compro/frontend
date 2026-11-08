@@ -126,9 +126,9 @@ export function ParameterLineChart({
   const limitY = limit !== undefined && limit >= minVal && limit <= maxVal ? y(limit) : undefined
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border bg-card p-4 shadow-2xs">
+    <div className="flex flex-col gap-1">
       {/* Header */}
-      <div className="flex items-center justify-between pb-1">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <span className="text-muted-foreground">{icon}</span>
           <span>{title}</span>

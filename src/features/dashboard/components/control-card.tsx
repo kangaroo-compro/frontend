@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Power, TriangleAlert } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -99,17 +99,19 @@ export function ControlCard({ machine, status, acks }: ControlCardProps) {
   )
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs w-full h-full flex flex-col justify-between">
-      <CardHeader className="flex flex-row items-center justify-between pb-3 p-5">
-        <CardTitle className="text-lg font-bold tracking-tight text-foreground">ON/OFF Control</CardTitle>
+    <Card className="h-full w-full">
+      <CardHeader>
+        <CardTitle className="text-lg font-bold tracking-tight">ON/OFF Control</CardTitle>
         {canTurn && (
-          <Badge variant="secondary" className="rounded-full px-3 py-0.5 text-xs font-medium">
-            You are authorized
-          </Badge>
+          <CardAction>
+            <Badge variant="secondary" className="rounded-full px-3 py-0.5 text-xs font-medium">
+              You are authorized
+            </Badge>
+          </CardAction>
         )}
       </CardHeader>
 
-      <CardContent className="space-y-5 p-5 pt-0">
+      <CardContent className="flex flex-col gap-5">
         <p className="text-xs text-muted-foreground leading-relaxed">
           ON and OFF commands only. Speed, pressure, and set points cannot be changed from the dashboard.
         </p>

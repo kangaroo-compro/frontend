@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { DataTable, type Column } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -75,22 +75,22 @@ export function MachineTable({ machines, latest, canRead, loading, error }: Prop
   ]
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs">
-      <CardHeader className="flex flex-col gap-3 p-5 pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <CardTitle className="text-lg font-bold tracking-tight text-foreground">List of Machines</CardTitle>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-bold tracking-tight">List of Machines</CardTitle>
         {canRead && (
-          <div className="flex flex-wrap items-center gap-3">
+          <CardAction className="flex flex-wrap items-center gap-3">
             <Input
               aria-label="Search machine"
               placeholder="Search Machine"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-48 rounded-full"
+              className="w-56"
             />
             <div className="flex items-center gap-2 text-sm">
               <span id="condition-filter-label">Conditions</span>
               <Select value={filter} onValueChange={(v) => setFilter(v as Filter)}>
-                <SelectTrigger aria-labelledby="condition-filter-label" className="w-28 rounded-lg">
+                <SelectTrigger aria-labelledby="condition-filter-label" className="w-28">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -100,10 +100,10 @@ export function MachineTable({ machines, latest, canRead, loading, error }: Prop
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </CardAction>
         )}
       </CardHeader>
-      <CardContent className="p-5 pt-0">
+      <CardContent>
         {!canRead && <p className="text-sm text-muted-foreground">You don't have access to machine data.</p>}
         {canRead && loading && <Skeleton className="h-40 w-full" />}
         {canRead && error && (

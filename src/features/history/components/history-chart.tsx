@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { Gauge, Thermometer } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ParameterLineChart } from '@/features/dashboard/components/parameter-line-chart'
 import { ParameterStatusChart } from '@/features/dashboard/components/parameter-status-chart'
@@ -45,12 +45,12 @@ export function HistoryChart({ machine, from, to, params, points, loading, error
   const limit = (max: number) => (max === 0 ? undefined : max) // 0/0 means the band is not set
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs">
-      <CardHeader className="flex flex-col gap-3 p-5 pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <CardTitle className="text-lg font-bold tracking-tight text-foreground">
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-bold tracking-tight">
           Chart · {machine.name} · {format(from, 'd MMM HH:mm')} – {format(to, 'd MMM HH:mm')}
         </CardTitle>
-        <div className="flex overflow-hidden rounded-lg border" role="group" aria-label="Chart parameter">
+        <CardAction className="flex overflow-hidden rounded-lg border" role="group" aria-label="Chart parameter">
           {tabs.map((x) => (
             <Button
               key={x.key}
@@ -62,9 +62,9 @@ export function HistoryChart({ machine, from, to, params, points, loading, error
               {x.label}
             </Button>
           ))}
-        </div>
+        </CardAction>
       </CardHeader>
-      <CardContent className="p-5 pt-0">
+      <CardContent>
         {loading && <Skeleton className="h-44 w-full" />}
         {error && (
           <Alert variant="destructive">

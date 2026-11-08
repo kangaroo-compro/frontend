@@ -48,11 +48,11 @@ export function HistoryTable({ machine, params, rows, meta, page, onPageChange, 
   ]
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs">
-      <CardHeader className="p-5 pb-3">
-        <CardTitle className="text-lg font-bold tracking-tight text-foreground">Data Table</CardTitle>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-bold tracking-tight">Data Table</CardTitle>
       </CardHeader>
-      <CardContent className="p-5 pt-0">
+      <CardContent>
         {loading && !rows && <Skeleton className="h-40 w-full" />}
         {error && (
           <Alert variant="destructive">
