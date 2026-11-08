@@ -28,7 +28,6 @@ export const router = createBrowserRouter([
           { path: '/report', element: <ReportPage /> },
           { path: '/report/new', element: <ReportNewPage /> },
           { path: '/manage-machine', element: <MachinesPage /> },
-          { path: '/profile', element: <DashboardPage /> },
           { path: '/role', element: <RolesPage /> },
           { path: '/users', element: <UsersPage /> },
         ],

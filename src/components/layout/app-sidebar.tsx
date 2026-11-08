@@ -7,7 +7,6 @@ import {
   LogOut,
   Radio,
   ShieldCheck,
-  User,
   Users,
 } from 'lucide-react'
 import {
@@ -52,11 +51,6 @@ const settingsItems = [
     title: 'Manage Machine',
     url: '/manage-machine',
     icon: Cpu,
-  },
-  {
-    title: 'Profile',
-    url: '/profile',
-    icon: User,
   },
   {
     title: 'Users',
