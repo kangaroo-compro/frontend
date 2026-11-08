@@ -1,6 +1,7 @@
 import { Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { Machine } from '@/features/machines/types'
@@ -75,19 +76,23 @@ export function HistoryFilters({ machines, value, onChange, onApply }: Props) {
 
           <div className="flex flex-col gap-2">
             <Label id="history-quick">Quick Range</Label>
-            <div className="flex h-8 overflow-hidden rounded-lg border" role="group" aria-labelledby="history-quick">
+            {/* The selection comes from the range itself, so picking From/To by hand clears it. */}
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              aria-labelledby="history-quick"
+              value={QUICK.find((q) => Math.abs(span - q.ms) < 1000)?.label ?? ''}
+              onValueChange={(label) => {
+                const q = QUICK.find((x) => x.label === label)
+                if (q) quick(q.ms) // an empty value means the user clicked the active one: keep it
+              }}
+            >
               {QUICK.map((q) => (
-                <Button
-                  key={q.label}
-                  type="button"
-                  variant={Math.abs(span - q.ms) < 1000 ? 'default' : 'ghost'}
-                  className="h-full rounded-none"
-                  onClick={() => quick(q.ms)}
-                >
+                <ToggleGroupItem key={q.label} value={q.label}>
                   {q.label}
-                </Button>
+                </ToggleGroupItem>
               ))}
-            </div>
+            </ToggleGroup>
           </div>
 
           <div className="flex flex-col gap-2">

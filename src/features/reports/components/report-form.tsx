@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
 import { errorMessage } from '@/lib/api'
@@ -212,21 +213,23 @@ export function ReportForm() {
 
           <fieldset className="flex flex-col gap-3">
             <legend className="mb-1 text-sm font-medium">Period</legend>
-            <div className="grid grid-cols-4 overflow-hidden rounded-lg border">
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              aria-label="Quick range"
+              className="w-full"
+              value={quick ?? ''}
+              onValueChange={(key) => {
+                const r = RANGES.find((x) => x.key === key)
+                if (r) pickQuick(r.key, r.ms) // an empty value means the user clicked the active one: keep it
+              }}
+            >
               {RANGES.map((r) => (
-                <button
-                  key={r.key}
-                  type="button"
-                  onClick={() => pickQuick(r.key, r.ms)}
-                  className={cn(
-                    'border-r px-3 py-2 text-sm last:border-r-0',
-                    quick === r.key ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
-                  )}
-                >
+                <ToggleGroupItem key={r.key} value={r.key} className="flex-1">
                   {r.label}
-                </button>
+                </ToggleGroupItem>
               ))}
-            </div>
+            </ToggleGroup>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="report-from">From</Label>
