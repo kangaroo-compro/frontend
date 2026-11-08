@@ -19,8 +19,8 @@ interface DeviceOverviewCardProps {
 export function DeviceOverviewCard({ machine, machines, onSelectMachine, machineStatus, condition }: DeviceOverviewCardProps) {
   const connected = machine.status === 'connected'
   return (
-    <Card className="rounded-xl border bg-card shadow-xs w-full">
-      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <Card className="w-full">
+      <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{machine.name}</h2>
           <div className="flex flex-wrap items-center gap-2">

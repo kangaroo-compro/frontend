@@ -1,5 +1,5 @@
 import { Gauge, Thermometer } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import type { Thresholds } from '@/features/machines/types'
 import { formatReading } from '@/lib/format'
 import type { CompressorSample } from '../types'
@@ -24,45 +24,51 @@ export function ParameterChartsSection({ samples, thresholds }: ParameterChartsS
   const limit = (max: number) => (max === 0 ? undefined : max) // 0/0 means the band is not set
 
   return (
-    <Card className="rounded-xl border bg-card shadow-xs w-full">
-      <CardHeader className="p-5 pb-3">
-        <CardTitle className="text-lg font-bold tracking-tight text-foreground">Parameter Charts</CardTitle>
-      </CardHeader>
-      <CardContent className="p-5 pt-0">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <ParameterLineChart
-            icon={<Thermometer className="size-4" />}
-            title="Temperature"
-            unit="°C"
-            latestValue={formatReading(last?.temperature, '°C')}
-            points={tempPoints}
-            windowMs={WINDOW_MS}
-            limit={limit(thresholds.temperature.max)}
-            {...yRange(
-              tempPoints.map((p) => p.v),
-              thresholds.temperature,
-            )}
-          />
+    <div className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold tracking-tight text-foreground">Parameter Charts</h2>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
+          <CardContent>
+            <ParameterLineChart
+              icon={<Thermometer className="size-4" />}
+              title="Temperature"
+              unit="°C"
+              latestValue={formatReading(last?.temperature, '°C')}
+              points={tempPoints}
+              windowMs={WINDOW_MS}
+              limit={limit(thresholds.temperature.max)}
+              {...yRange(
+                tempPoints.map((p) => p.v),
+                thresholds.temperature,
+              )}
+            />
+          </CardContent>
+        </Card>
 
-          <ParameterLineChart
-            icon={<Gauge className="size-4" />}
-            title="Pressure"
-            unit="mbar"
-            latestValue={formatReading(last?.pressure, 'mbar')}
-            points={pressurePoints}
-            windowMs={WINDOW_MS}
-            limit={limit(thresholds.pressure.max)}
-            {...yRange(
-              pressurePoints.map((p) => p.v),
-              thresholds.pressure,
-            )}
-          />
+        <Card>
+          <CardContent>
+            <ParameterLineChart
+              icon={<Gauge className="size-4" />}
+              title="Pressure"
+              unit="mbar"
+              latestValue={formatReading(last?.pressure, 'mbar')}
+              points={pressurePoints}
+              windowMs={WINDOW_MS}
+              limit={limit(thresholds.pressure.max)}
+              {...yRange(
+                pressurePoints.map((p) => p.v),
+                thresholds.pressure,
+              )}
+            />
+          </CardContent>
+        </Card>
 
-          <div className="lg:col-span-2">
+        <Card className="lg:col-span-2">
+          <CardContent>
             <ParameterStatusChart latestStatus={statusPoints.at(-1)?.status} points={statusPoints} windowMs={WINDOW_MS} />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }
