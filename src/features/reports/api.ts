@@ -1,8 +1,14 @@
 import { api, type Envelope } from '@/lib/api'
 import type { PageMeta, Report, ReportInput } from './types'
 
-export async function listReports(limit: number, offset: number): Promise<{ reports: Report[]; meta: PageMeta }> {
-  const { data } = await api.get<Envelope<Report[]> & { meta: PageMeta }>('/reports', { params: { limit, offset } })
+export async function listReports(
+  limit: number,
+  offset: number,
+  search?: string,
+): Promise<{ reports: Report[]; meta: PageMeta }> {
+  const { data } = await api.get<Envelope<Report[]> & { meta: PageMeta }>('/reports', {
+    params: { limit, offset, search: search || undefined },
+  })
   return { reports: data.data, meta: data.meta }
 }
 
