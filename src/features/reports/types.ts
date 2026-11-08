@@ -27,6 +27,3 @@ export type ReportInput = {
 }
 
 export type PageMeta = { limit: number; offset: number; total: number }
-
-/** The part of a machine the report form needs. */
-export type MachineOption = { id: string; name: string; device_id: string }
