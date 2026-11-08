@@ -7,6 +7,7 @@ import { HistoryPage } from '@/pages/history-page'
 import { MachineDetailPage } from '@/pages/machine-detail-page'
 import { MachinesPage } from '@/pages/machines-page'
 import { MonitoringPage } from '@/pages/monitoring-page'
+import { ProfilePage } from '@/pages/profile-page'
 import { ReportNewPage } from '@/pages/report-new-page'
 import { ReportPage } from '@/pages/report-page'
 import { RolesPage } from '@/pages/roles-page'
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
           { path: '/report', element: <ReportPage /> },
           { path: '/report/new', element: <ReportNewPage /> },
           { path: '/manage-machine', element: <MachinesPage /> },
+          { path: '/profile', element: <ProfilePage /> },
           { path: '/role', element: <RolesPage /> },
           { path: '/users', element: <UsersPage /> },
         ],

@@ -35,9 +35,9 @@ export async function recoverSession(rejectedToken: string): Promise<boolean> {
   return refreshNow()
 }
 
-/** Revokes the refresh token on the server (best effort) and clears the session. */
-export function signOutEverywhere() {
+/** Revokes the refresh token on the server (best effort) and clears the session; the notice shows on the login page. */
+export function signOutEverywhere(notice?: string) {
   const { session, signOut } = useAuthStore.getState()
   if (session) logout(session.refreshToken).catch(() => {})
-  signOut()
+  signOut(notice)
 }

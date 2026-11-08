@@ -28,7 +28,7 @@ export function MonitoringPage() {
         </div>
         <div className="flex items-center gap-3">
           <ConnectionBadge state={state} />
-          <Button variant="outline" size="sm" onClick={signOutEverywhere}>
+          <Button variant="outline" size="sm" onClick={() => signOutEverywhere()}>
             <LogOut aria-hidden /> Sign out
           </Button>
         </div>

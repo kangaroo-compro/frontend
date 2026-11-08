@@ -7,6 +7,7 @@ import {
   LogOut,
   Radio,
   ShieldCheck,
+  User,
   Users,
 } from 'lucide-react'
 import {
@@ -51,6 +52,11 @@ const settingsItems = [
     title: 'Manage Machine',
     url: '/manage-machine',
     icon: Cpu,
+  },
+  {
+    title: 'Profile',
+    url: '/profile',
+    icon: User,
   },
   {
     title: 'Users',
@@ -161,7 +167,7 @@ export function AppSidebar() {
         <Button
           variant="outline"
           size="sm"
-          onClick={signOutEverywhere}
+          onClick={() => signOutEverywhere()}
           className="w-full justify-start gap-2 rounded-lg text-xs font-medium group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
         >
           <LogOut className="size-4" />
