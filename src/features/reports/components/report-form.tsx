@@ -11,7 +11,8 @@ import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
 import { errorMessage } from '@/lib/api'
 import { cn } from '@/lib/utils'
-import { createReport, listMachines } from '../api'
+import { listMachines } from '@/features/machines/api'
+import { createReport } from '../api'
 import type { ReportFormat, ReportType } from '../types'
 import { DateTimePicker } from './date-picker'
 
@@ -58,7 +59,7 @@ export function ReportForm() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const canReadMachines = useCan(PERMISSIONS.machineRead)
-  const machines = useQuery({ queryKey: ['machines', 'options'], queryFn: listMachines, enabled: canReadMachines })
+  const machines = useQuery({ queryKey: ['machines', 'options'], queryFn: () => listMachines(200, 0).then((page) => page.machines), enabled: canReadMachines })
 
   const [type, setType] = useState<ReportType>('machine_condition')
   const [format, setFormat] = useState<ReportFormat>('xlsx')
