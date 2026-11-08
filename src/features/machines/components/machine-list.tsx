@@ -11,13 +11,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { ConfirmDeleteDialog } from '@/features/accounts/components/confirm-delete-dialog'
 import { useCan } from '@/features/auth/access'
-import { ConnectivityBadge } from '@/features/dashboard/components/machine-table'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { errorMessage } from '@/lib/api'
 import { NO_VALUE } from '@/lib/format'
 import { deleteMachine, listMachines } from '../api'
 import { DATA_PATH_LABELS, type Machine } from '../types'
 import { MachineDialog } from './machine-dialog'
+import { ConnectivityBadge } from './status-badges'
 
 const PAGE_SIZE = 10
 const SEARCH_DEBOUNCE_MS = 300

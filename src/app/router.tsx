@@ -4,7 +4,6 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LoginPage } from '@/pages/login-page'
 import { DashboardPage } from '@/pages/dashboard-page'
 import { HistoryPage } from '@/pages/history-page'
-import { MachineDetailPage } from '@/pages/machine-detail-page'
 import { MachinesPage } from '@/pages/machines-page'
 import { MonitoringPage } from '@/pages/monitoring-page'
 import { ProfilePage } from '@/pages/profile-page'
@@ -23,7 +22,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/dashboard', element: <DashboardPage /> },
-          { path: '/dashboard/:machineId', element: <MachineDetailPage /> },
+          { path: '/dashboard/:machineId', element: <DashboardPage /> },
           { path: '/monitoring', element: <MonitoringPage /> },
           { path: '/history', element: <HistoryPage /> },
           { path: '/report', element: <ReportPage /> },
