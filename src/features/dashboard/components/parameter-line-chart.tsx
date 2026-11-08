@@ -6,6 +6,7 @@ import {
   type PointerEvent,
   type ReactNode,
 } from 'react'
+import { formatReading } from '@/lib/format'
 
 export type Point = { t: number; v: number }
 
@@ -16,7 +17,8 @@ interface ParameterLineChartProps {
   points: Point[]
   unit: string
   windowMs?: number
-  maxLimitLabel?: string
+  /** The machine's threshold max; drawn as the dashed limit line when set and inside the Y range. */
+  limit?: number
   yMin?: number
   yMax?: number
 }
@@ -48,7 +50,7 @@ export function ParameterLineChart({
   points,
   unit,
   windowMs,
-  maxLimitLabel = 'Max limit (to be set)',
+  limit,
   yMin: customMin,
   yMax: customMax,
 }: ParameterLineChartProps) {
@@ -118,7 +120,7 @@ export function ParameterLineChart({
   // Ticks along the X axis (7 timestamps like the wireframe)
   const tickCount = 7
   const xTicks = Array.from({ length: tickCount }, (_, i) => start + (duration / (tickCount - 1)) * i)
-  const maxLimitY = PAD.top + 8
+  const limitY = limit !== undefined && limit >= minVal && limit <= maxVal ? y(limit) : undefined
 
   return (
     <div className="flex flex-col justify-between rounded-xl border bg-card p-4 shadow-2xs">
@@ -148,24 +150,39 @@ export function ParameterLineChart({
           onPointerMove={onPointerMove}
           onPointerLeave={() => setActive(null)}
         >
-          {/* Dashed Max Limit Reference Line */}
-          <line
-            x1={PAD.left}
-            x2={PAD.left + plotW}
-            y1={maxLimitY}
-            y2={maxLimitY}
-            className="stroke-muted-foreground/40"
-            strokeDasharray="4 4"
-            strokeWidth={1}
-          />
-          <text
-            x={PAD.left + plotW}
-            y={maxLimitY + 12}
-            textAnchor="end"
-            className="fill-muted-foreground text-[10px] tracking-tight font-medium"
-          >
-            {maxLimitLabel}
-          </text>
+          {/* Dashed Max Limit Reference Line, only when the machine has a threshold */}
+          {limitY !== undefined && (
+            <>
+              <line
+                x1={PAD.left}
+                x2={PAD.left + plotW}
+                y1={limitY}
+                y2={limitY}
+                className="stroke-muted-foreground/40"
+                strokeDasharray="4 4"
+                strokeWidth={1}
+              />
+              <text
+                x={PAD.left + plotW}
+                y={limitY - 4}
+                textAnchor="end"
+                className="fill-muted-foreground text-[10px] tracking-tight font-medium"
+              >
+                Max limit {formatReading(limit, unit, 2)}
+              </text>
+            </>
+          )}
+
+          {points.length === 0 && (
+            <text
+              x={PAD.left + plotW / 2}
+              y={PAD.top + PLOT_HEIGHT / 2}
+              textAnchor="middle"
+              className="fill-muted-foreground text-xs"
+            >
+              No data yet
+            </text>
+          )}
 
           {/* Area Fill */}
           {area && <path d={area} className="fill-foreground/5" />}
@@ -183,7 +200,7 @@ export function ParameterLineChart({
           )}
 
           {/* X Axis Time Labels */}
-          {xTicks.map((t, idx) => {
+          {points.length > 0 && xTicks.map((t, idx) => {
             const posX = x(t)
             let anchor: 'start' | 'middle' | 'end' = 'middle'
             if (idx === 0) anchor = 'start'
@@ -239,7 +256,7 @@ export function ParameterLineChart({
             }}
           >
             <div className="font-semibold tabular-nums">
-              {hovered.v} {unit}
+              {formatReading(hovered.v, unit, 2)}
             </div>
             <div className="text-[10px] text-muted-foreground tabular-nums">
               {formatClockFull(hovered.t)}

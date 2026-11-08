@@ -6,11 +6,12 @@ import {
   type PointerEvent,
 } from 'react'
 import { Power } from 'lucide-react'
+import { NO_VALUE } from '@/lib/format'
 
 export type StatusPoint = { t: number; status: 'ON' | 'OFF' }
 
 interface ParameterStatusChartProps {
-  latestStatus: 'ON' | 'OFF'
+  latestStatus?: 'ON' | 'OFF'
   points: StatusPoint[]
   windowMs?: number
 }
@@ -124,7 +125,7 @@ export function ParameterStatusChart({
           <Power className="size-4 text-muted-foreground stroke-[2.2]" aria-hidden />
           <span>Machine status</span>
         </div>
-        <div className="text-base font-bold text-foreground">{latestStatus}</div>
+        <div className="text-base font-bold text-foreground">{latestStatus ?? NO_VALUE}</div>
       </div>
 
       {/* Interactive Responsive SVG Area */}
@@ -133,7 +134,7 @@ export function ParameterStatusChart({
         className="relative w-full rounded-md outline-none focus-visible:ring-1 focus-visible:ring-ring"
         tabIndex={0}
         role="img"
-        aria-label={`Machine status chart, current ${latestStatus}`}
+        aria-label={`Machine status chart, current ${latestStatus ?? 'unknown'}`}
         onKeyDown={onKeyDown}
         onBlur={() => setActive(null)}
       >
@@ -193,8 +194,19 @@ export function ParameterStatusChart({
             />
           )}
 
+          {points.length === 0 && (
+            <text
+              x={PAD.left + plotW / 2}
+              y={PAD.top + PLOT_HEIGHT / 2}
+              textAnchor="middle"
+              className="fill-muted-foreground text-xs"
+            >
+              No data yet
+            </text>
+          )}
+
           {/* Time Labels */}
-          {xTicks.map((t, idx) => {
+          {points.length > 0 && xTicks.map((t, idx) => {
             const posX = x(t)
             let anchor: 'start' | 'middle' | 'end' = 'middle'
             if (idx === 0) anchor = 'start'
