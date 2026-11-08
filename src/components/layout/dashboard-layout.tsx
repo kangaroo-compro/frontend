@@ -3,6 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { UserPill } from '@/features/auth/components/user-pill'
+import { ThemeToggle } from '@/features/theme/theme-toggle'
 
 export function DashboardLayout() {
   return (
@@ -14,7 +15,8 @@ export function DashboardLayout() {
           <header className="flex min-h-14 items-center gap-3 border-b px-4 py-2 md:justify-end md:px-6 lg:px-8">
             <SidebarTrigger className="md:hidden" />
             <span className="text-sm font-semibold tracking-tight md:hidden">Kangaroo Compro</span>
-            <div className="ml-auto md:ml-0">
+            <div className="ml-auto flex items-center gap-2 md:ml-0">
+              <ThemeToggle />
               <UserPill />
             </div>
           </header>
