@@ -55,7 +55,8 @@ export function HistoryFilters({ machines, value, onChange, onApply }: Props) {
   return (
     <Card>
       <CardContent className="flex flex-col gap-5">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_minmax(0,1fr)]">
+        {/* Every field is a Label over an h-8 control, so they share one baseline: 1 column below sm, 2 from sm, 4 from lg. */}
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-2">
             <Label htmlFor="history-machine">Machine</Label>
             <Select value={value.machineId} onValueChange={(machineId) => onChange({ ...value, machineId })}>
@@ -73,14 +74,14 @@ export function HistoryFilters({ machines, value, onChange, onApply }: Props) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium">Quick Range</span>
-            <div className="flex overflow-hidden rounded-lg border" role="group" aria-label="Quick range">
+            <Label id="history-quick">Quick Range</Label>
+            <div className="flex h-8 overflow-hidden rounded-lg border" role="group" aria-labelledby="history-quick">
               {QUICK.map((q) => (
                 <Button
                   key={q.label}
                   type="button"
                   variant={Math.abs(span - q.ms) < 1000 ? 'default' : 'ghost'}
-                  className="rounded-none"
+                  className="h-full rounded-none"
                   onClick={() => quick(q.ms)}
                 >
                   {q.label}
