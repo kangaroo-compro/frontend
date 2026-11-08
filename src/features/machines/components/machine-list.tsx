@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus } from 'lucide-react'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
+import { IconButton } from '@/components/icon-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -72,16 +72,16 @@ export function MachineList() {
       key: 'actions',
       header: 'Action',
       cell: (m) => (
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           {canUpdate && (
-            <Button size="sm" variant="outline" onClick={() => setEditing(m)}>
-              Edit
-            </Button>
+            <IconButton label={`Edit ${m.name}`} variant="ghost" onClick={() => setEditing(m)}>
+              <Pencil />
+            </IconButton>
           )}
           {canDelete && (
-            <Button size="sm" variant="outline" onClick={() => setDeleting(m)}>
-              Delete
-            </Button>
+            <IconButton label={`Delete ${m.name}`} variant="ghost" onClick={() => setDeleting(m)}>
+              <Trash2 />
+            </IconButton>
           )}
         </div>
       ),
@@ -91,9 +91,7 @@ export function MachineList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-bold tracking-tight">
-          Registered Machines {machines.data ? `(${machines.data.meta.total})` : ''}
-        </CardTitle>
+        <CardTitle className="text-lg font-bold tracking-tight">Registered Machines</CardTitle>
         <CardAction className="flex flex-wrap items-center gap-3">
           <Input
             aria-label="Search machine"
@@ -106,9 +104,9 @@ export function MachineList() {
             className="w-56"
           />
           {canCreate && (
-            <Button onClick={() => setEditing('new')}>
-              <Plus /> Add Machine
-            </Button>
+            <IconButton label="Add machine" onClick={() => setEditing('new')}>
+              <Plus />
+            </IconButton>
           )}
         </CardAction>
       </CardHeader>

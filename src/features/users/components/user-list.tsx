@@ -3,7 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/icon-button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -50,9 +50,7 @@ export function UserList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-bold tracking-tight">
-          Registered Users {users.data ? `(${users.data.meta.total})` : ''}
-        </CardTitle>
+        <CardTitle className="text-lg font-bold tracking-tight">Registered Users</CardTitle>
         <CardAction className="flex flex-wrap items-center gap-3">
           <Input
             aria-label="Search user"
@@ -65,9 +63,9 @@ export function UserList() {
             className="w-56"
           />
           {canCreate && (
-            <Button>
-              <Plus /> Add User
-            </Button>
+            <IconButton label="Add user">
+              <Plus />
+            </IconButton>
           )}
         </CardAction>
       </CardHeader>
