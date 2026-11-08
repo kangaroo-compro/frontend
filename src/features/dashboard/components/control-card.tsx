@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Power, TriangleAlert } from 'lucide-react'
+import { Power, TriangleAlert, X } from 'lucide-react'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,6 +23,8 @@ import { errorMessage } from '@/lib/api'
 
 /** The HMI answers within 8 s (MQTT.md 3.5); the Manager command itself is valid for 10 s. */
 const NO_RESPONSE_MS = 15_000
+/** How long the "Done" alert stays before it clears itself. */
+const SUCCESS_VISIBLE_MS = 4_000
 
 type Sent = { cmdId: string; command: CommandName; at: number }
 
@@ -44,9 +46,10 @@ const REASONS: Record<string, string> = {
 function outcomeOf(
   ack: CommandAck | undefined,
   timedOut: boolean,
+  succeeded: boolean,
 ): { text: string; tone: 'success' | 'warning' | 'danger' } {
+  if (succeeded) return { text: 'Done', tone: 'success' }
   if (ack && isFinalAck(ack)) {
-    if (ack.result === 'EXECUTED') return { text: 'Done', tone: 'success' }
     const why = ack.reason ? (REASONS[ack.reason] ?? ack.reason) : ''
     return { text: `${ack.result === 'REJECTED' ? 'Rejected' : 'Failed'}${why ? `: ${why}` : ''}`, tone: 'danger' }
   }
@@ -60,6 +63,10 @@ export function ControlCard({ machine, status, acks }: ControlCardProps) {
   const [confirm, setConfirm] = useState<CommandName | null>(null)
   const [sent, setSent] = useState<Sent | null>(null)
   const [timedOutId, setTimedOutId] = useState<string | null>(null)
+  // cmd_id of the command whose commanded state the live machine status has reached (kept even if the status changes later).
+  const [reachedId, setReachedId] = useState<string | null>(null)
+  // cmd_id whose alert is hidden: a success after SUCCESS_VISIBLE_MS, or an error the user dismissed.
+  const [hiddenId, setHiddenId] = useState<string | null>(null)
 
   const send = useMutation({
     mutationFn: (command: CommandName) => sendCommand(machine.device_id, command),
@@ -75,11 +82,25 @@ export function ControlCard({ machine, status, acks }: ControlCardProps) {
     return () => clearTimeout(timer)
   }, [pendingId])
 
+  // The live status is the truth: once it equals the commanded state the command worked, ack or no ack.
+  const reachedNow = sent !== null && status === sent.command
+  if (sent && reachedNow && reachedId !== sent.cmdId) setReachedId(sent.cmdId) // latch it, guarded so it renders once more at most
+
   const ack = sent ? acks[sent.cmdId] : undefined
-  const done = isFinalAck(ack)
-  const timedOut = sent !== null && timedOutId === sent.cmdId && !done
-  const busy = send.isPending || (sent !== null && !done && !timedOut)
-  const outcome = sent ? outcomeOf(ack, timedOut) : undefined
+  const succeeded = sent !== null && (reachedNow || reachedId === sent.cmdId || ack?.result === 'EXECUTED')
+  const failed = !succeeded && isFinalAck(ack)
+  const timedOut = sent !== null && timedOutId === sent.cmdId && !succeeded && !failed
+  const busy = send.isPending || (sent !== null && !succeeded && !failed && !timedOut)
+  const outcome = sent ? outcomeOf(ack, timedOut, succeeded) : undefined
+  // A success shows briefly, then goes; an error stays until dismissed or until the machine reaches the state.
+  const alertVisible = outcome !== undefined && hiddenId !== sent?.cmdId
+
+  const successId = succeeded ? sent?.cmdId : undefined
+  useEffect(() => {
+    if (!successId) return
+    const timer = setTimeout(() => setHiddenId(successId), SUCCESS_VISIBLE_MS)
+    return () => clearTimeout(timer)
+  }, [successId])
 
   const blocked = !canTurn
     ? 'You are not authorized'
@@ -130,14 +151,26 @@ export function ControlCard({ machine, status, acks }: ControlCardProps) {
             {errorMessage(send.error)}
           </p>
         )}
-        {outcome && (
-          <Badge
-            role="status"
-            variant={outcome.tone}
-            className="h-auto w-fit max-w-full whitespace-normal rounded-xl px-2.5 py-1 text-left text-xs font-normal"
-          >
-            {outcome.text}
-          </Badge>
+        {outcome && alertVisible && (
+          <div className="flex items-start gap-1">
+            <Badge
+              role="status"
+              variant={outcome.tone}
+              className="h-auto w-fit max-w-full whitespace-normal rounded-xl px-2.5 py-1 text-left text-xs font-normal"
+            >
+              {outcome.text}
+            </Badge>
+            {outcome.tone === 'danger' && sent && (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label="Dismiss"
+                onClick={() => setHiddenId(sent.cmdId)}
+              >
+                <X />
+              </Button>
+            )}
+          </div>
         )}
 
         <div className="space-y-1">
