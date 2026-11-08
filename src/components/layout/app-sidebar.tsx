@@ -74,8 +74,13 @@ export function AppSidebar() {
   const location = useLocation()
   const canReadRoles = useCan(PERMISSIONS.roleRead)
   const canReadReports = useCan(PERMISSIONS.report)
+  const canReadHistory = useCan(PERMISSIONS.history)
   const canReadUsers = useCan(PERMISSIONS.userRead)
-  const visibleMonitoring = monitoringItems.filter((item) => item.url !== '/report' || canReadReports)
+  const visibleMonitoring = monitoringItems.filter((item) => {
+    if (item.url === '/report') return canReadReports
+    if (item.url === '/history') return canReadHistory
+    return true
+  })
   const visibleSettings = settingsItems.filter((item) => {
     if (item.url === '/users') return canReadUsers
     if (item.url === '/role') return canReadRoles

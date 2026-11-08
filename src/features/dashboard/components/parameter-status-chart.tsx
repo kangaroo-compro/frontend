@@ -14,6 +14,8 @@ interface ParameterStatusChartProps {
   latestStatus?: 'ON' | 'OFF'
   points: StatusPoint[]
   windowMs?: number
+  /** Right edge of the time axis (epoch ms); defaults to the last point. */
+  endMs?: number
 }
 
 const PAD = { left: 34, right: 24, top: 28, bottom: 24 }
@@ -40,6 +42,7 @@ export function ParameterStatusChart({
   latestStatus,
   points,
   windowMs,
+  endMs,
 }: ParameterStatusChartProps) {
   const box = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(500)
@@ -58,7 +61,7 @@ export function ParameterStatusChart({
   }, [])
 
   const last = points.at(-1)
-  const end = last?.t ?? 0
+  const end = endMs ?? last?.t ?? 0
   const duration = windowMs ?? Math.max(end - (points[0]?.t ?? end), 60_000)
   const start = end - duration
 
