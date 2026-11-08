@@ -1,12 +1,17 @@
 import { keepPreviousData, useQuery, useMutation } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { Download } from 'lucide-react'
+import { Download, Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { DataTable, type Column } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PERMISSIONS } from '@/features/accounts/permissions'
+import { useCan } from '@/features/auth/access'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { errorMessage } from '@/lib/api'
 import { formatBytes } from '@/lib/format'
 import { listReports, reportDownloadUrl } from '../api'
@@ -15,6 +20,7 @@ import type { Report } from '../types'
 import * as React from 'react'
 
 const PAGE_SIZE = 10
+const SEARCH_DEBOUNCE_MS = 300
 
 const TYPE_LABEL = { machine_condition: 'Machine condition', full_sensor_data: 'Full sensor data' } as const
 
@@ -34,11 +40,14 @@ function StatusBadge({ report }: { report: Report }) {
 export function ReportHistory() {
   useReportEvents()
 
+  const canGenerate = useCan(PERMISSIONS.reportGenerate)
   const [page, setPage] = React.useState(1)
-  
+  const [search, setSearch] = React.useState('')
+  const debounced = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
+
   const reports = useQuery({
-    queryKey: ['reports', page],
-    queryFn: () => listReports(PAGE_SIZE, (page - 1) * PAGE_SIZE),
+    queryKey: ['reports', page, debounced],
+    queryFn: () => listReports(PAGE_SIZE, (page - 1) * PAGE_SIZE, debounced),
     placeholderData: keepPreviousData,
   })
 
@@ -104,6 +113,30 @@ export function ReportHistory() {
 
   return (
     <Card>
+      <CardHeader>
+        <CardTitle className="text-lg font-bold tracking-tight">
+          Generated Reports {reports.data ? `(${reports.data.meta.total})` : ''}
+        </CardTitle>
+        <CardAction className="flex flex-wrap items-center gap-3">
+          <Input
+            aria-label="Search report"
+            placeholder="Search Report"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(1)
+            }}
+            className="w-56"
+          />
+          {canGenerate && (
+            <Button asChild>
+              <Link to="/report/new">
+                <Plus /> Generate Report
+              </Link>
+            </Button>
+          )}
+        </CardAction>
+      </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {reports.isPending && <Skeleton className="h-40 w-full" />}
         {reports.isError && (
@@ -121,12 +154,12 @@ export function ReportHistory() {
             data={reports.data.reports}
             columns={columns}
             rowKey={(r) => r.id}
-            empty="No reports yet."
+            empty={debounced ? 'No report matches the search.' : 'No reports yet.'}
             meta={reports.data.meta}
             page={page}
             onPageChange={setPage}
-            />
-            )}
+          />
+        )}
       </CardContent>
     </Card>
   )
