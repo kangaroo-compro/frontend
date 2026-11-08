@@ -12,7 +12,7 @@ export function DashboardLayout() {
         <AppSidebar />
         <SidebarInset className="min-h-svh bg-background flex flex-col w-full min-w-0">
           {/* Top bar: the sidebar toggle and title on mobile, the profile pill on every page */}
-          <header className="flex min-h-14 items-center gap-3 border-b px-4 py-2 md:justify-end md:px-6 lg:px-8">
+          <header className="flex h-16 shrink-0 items-center gap-3 border-b px-4 md:justify-end md:px-6 lg:px-8">
             <SidebarTrigger className="md:hidden" />
             <span className="text-sm font-semibold tracking-tight md:hidden">Kangaroo Compro</span>
             <div className="ml-auto flex items-center gap-2 md:ml-0">
