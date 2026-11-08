@@ -29,7 +29,7 @@ export function MetricCard({ icon, label, value, condition, subtext }: MetricCar
           {condition === null && <span className="text-xs text-muted-foreground">{NO_VALUE}</span>}
           {condition && (
             <Badge
-              variant={condition === 'Abnormal' ? 'destructive' : 'outline'}
+              variant={condition === 'Abnormal' ? 'danger' : 'success'}
               className="w-fit gap-1 rounded-full px-2.5 py-0.5 text-xs font-normal"
             >
               {condition === 'Abnormal' ? <TriangleAlert aria-hidden /> : <Check aria-hidden />}

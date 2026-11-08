@@ -41,14 +41,17 @@ export function DeviceOverviewCard({
           <div className="flex min-w-0 flex-col gap-2">
             <CardTitle className="text-xl font-bold tracking-tight sm:text-2xl">{machine.name}</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium">
+              <Badge
+                variant={machineStatus === 'ON' ? 'success' : machineStatus === 'OFF' ? 'secondary' : 'outline'}
+                className="gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
+              >
                 <Power className="size-3.5 stroke-[2.2]" aria-hidden />
                 {machineStatus ? `Machine ${machineStatus}` : `Machine ${NO_VALUE}`}
               </Badge>
 
               {condition ? (
                 <Badge
-                  variant={condition === 'Abnormal' ? 'destructive' : 'outline'}
+                  variant={condition === 'Abnormal' ? 'danger' : 'success'}
                   className="gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
                 >
                   {condition === 'Abnormal' ? <TriangleAlert className="size-3.5" aria-hidden /> : <Check className="size-3.5 stroke-[2.2]" aria-hidden />}
@@ -60,8 +63,11 @@ export function DeviceOverviewCard({
                 </Badge>
               )}
 
-              <Badge variant="outline" className="gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium">
-                <span className={`size-2 rounded-full ${connected ? 'bg-foreground' : 'bg-destructive'}`} aria-hidden />
+              <Badge
+                variant={connected ? 'success' : 'danger'}
+                className="gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
+              >
+                <span className="size-2 rounded-full bg-current" aria-hidden />
                 {connected ? 'Device connected' : 'Device disconnected'}
               </Badge>
             </div>

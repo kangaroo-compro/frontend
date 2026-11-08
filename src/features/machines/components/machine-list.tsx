@@ -4,7 +4,6 @@ import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
 import { IconButton } from '@/components/icon-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -17,7 +16,7 @@ import { NO_VALUE } from '@/lib/format'
 import { deleteMachine, listMachines } from '../api'
 import { DATA_PATH_LABELS, type Machine } from '../types'
 import { MachineDialog } from './machine-dialog'
-import { ConnectivityBadge } from './status-badges'
+import { ConnectivityBadge, ControlBadge } from './status-badges'
 
 const PAGE_SIZE = 10
 const SEARCH_DEBOUNCE_MS = 300
@@ -61,11 +60,7 @@ export function MachineList() {
     {
       key: 'control',
       header: 'ON/OFF Control',
-      cell: (m) => (
-        <Badge variant="outline" className="rounded-full px-2.5 font-normal">
-          {m.cmd_enabled ? 'Enabled' : 'Disabled'}
-        </Badge>
-      ),
+      cell: (m) => <ControlBadge enabled={m.cmd_enabled} />,
     },
     { key: 'status', header: 'Status', cell: (m) => <ConnectivityBadge status={m.status} /> },
     {

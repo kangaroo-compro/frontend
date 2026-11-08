@@ -33,9 +33,9 @@ function machineNames(r: Report): string {
 }
 
 function StatusBadge({ report }: { report: Report }) {
-  if (report.status === 'ready') return <Badge>Ready</Badge>
-  if (report.status === 'pending') return <Badge variant="secondary">Generating…</Badge>
-  return <Badge variant="destructive">Failed</Badge>
+  if (report.status === 'ready') return <Badge variant="success">Ready</Badge>
+  if (report.status === 'pending') return <Badge variant="warning">Generating…</Badge>
+  return <Badge variant="danger">Failed</Badge>
 }
 
 export function ReportHistory() {

@@ -4,11 +4,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { condition } from '@/features/machines/condition'
-import { ConditionBadge } from '@/features/machines/components/status-badges'
+import { ConditionBadge, MachineStatusBadge } from '@/features/machines/components/status-badges'
 import type { Machine, PageMeta } from '@/features/machines/types'
 import { parseReadings } from '@/features/telemetry/api'
 import type { TelemetryRow } from '@/features/telemetry/types'
-import { formatReading, NO_VALUE } from '@/lib/format'
+import { formatReading } from '@/lib/format'
 import type { Params } from './history-filters'
 
 export const HISTORY_PAGE_SIZE = 20
@@ -29,7 +29,7 @@ export function HistoryTable({ machine, params, rows, meta, page, onPageChange, 
     { key: 'time', header: 'Time', cell: (r) => format(new Date(r.recorded_at), 'dd/MM/yyyy HH:mm:ss') },
     { key: 'machine', header: 'Machine', cell: () => machine.name },
     ...(params.status
-      ? [{ key: 'status', header: 'Status', cell: (r: TelemetryRow) => parseReadings(r.payload).status ?? NO_VALUE }]
+      ? [{ key: 'status', header: 'Status', cell: (r: TelemetryRow) => <MachineStatusBadge status={parseReadings(r.payload).status} /> }]
       : []),
     ...(params.temperature
       ? [{ key: 'temp', header: 'Temp', cell: (r: TelemetryRow) => formatReading(parseReadings(r.payload).temperature, '°C') }]
