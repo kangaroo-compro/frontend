@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { Download, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { DataTable, type Column } from '@/components/data-table'
+import { IconButton } from '@/components/icon-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -114,9 +115,7 @@ export function ReportHistory() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg font-bold tracking-tight">
-          Generated Reports {reports.data ? `(${reports.data.meta.total})` : ''}
-        </CardTitle>
+        <CardTitle className="text-lg font-bold tracking-tight">Generated Reports</CardTitle>
         <CardAction className="flex flex-wrap items-center gap-3">
           <Input
             aria-label="Search report"
@@ -129,11 +128,11 @@ export function ReportHistory() {
             className="w-56"
           />
           {canGenerate && (
-            <Button asChild>
+            <IconButton label="Generate report" asChild>
               <Link to="/report/new">
-                <Plus /> Generate Report
+                <Plus />
               </Link>
-            </Button>
+            </IconButton>
           )}
         </CardAction>
       </CardHeader>
