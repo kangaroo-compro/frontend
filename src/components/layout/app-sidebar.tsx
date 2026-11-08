@@ -45,7 +45,7 @@ const monitoringItems = [
 
 const settingsItems = [
   {
-    title: 'Manage Machine',
+    title: 'Machine',
     url: '/manage-machine',
     icon: Cpu,
   },

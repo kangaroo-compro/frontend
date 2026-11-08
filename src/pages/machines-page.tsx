@@ -9,7 +9,7 @@ export function MachinesPage() {
   return (
     <div className="flex w-full flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Manage machines</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Machine</h1>
       </header>
       {canRead ? (
         <>

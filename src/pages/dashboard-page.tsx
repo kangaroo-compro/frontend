@@ -137,7 +137,7 @@ export function DashboardPage() {
           {canCreate && (
             <CardContent>
               <Button asChild variant="outline">
-                <Link to="/manage-machine">Go to Manage Machine</Link>
+                <Link to="/manage-machine">Go to Machine</Link>
               </Button>
             </CardContent>
           )}
