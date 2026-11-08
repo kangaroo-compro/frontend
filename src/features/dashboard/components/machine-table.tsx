@@ -78,30 +78,30 @@ export function MachineTable({ machines, latest, canRead, loading, error }: Prop
     <Card>
       <CardHeader>
         <CardTitle className="text-lg font-bold tracking-tight">List of Machines</CardTitle>
-        {canRead && (
-          <CardAction className="flex flex-wrap items-center gap-3">
-            <Input
-              aria-label="Search machine"
-              placeholder="Search Machine"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-56"
-            />
-            <div className="flex items-center gap-2 text-sm">
-              <span id="condition-filter-label">Conditions</span>
-              <Select value={filter} onValueChange={(v) => setFilter(v as Filter)}>
-                <SelectTrigger aria-labelledby="condition-filter-label" className="w-28">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="Normal">Normal</SelectItem>
-                  <SelectItem value="Abnormal">Abnormal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardAction>
-        )}
+        {/* Always in the title row, even while loading or without data; only disabled when the role cannot read machines. */}
+        <CardAction className="flex flex-wrap items-center gap-3">
+          <Input
+            aria-label="Search machine"
+            placeholder="Search Machine"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            disabled={!canRead}
+            className="w-56"
+          />
+          <div className="flex items-center gap-2 text-sm">
+            <span id="condition-filter-label">Conditions</span>
+            <Select value={filter} onValueChange={(v) => setFilter(v as Filter)} disabled={!canRead}>
+              <SelectTrigger aria-labelledby="condition-filter-label" className="w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="Normal">Normal</SelectItem>
+                <SelectItem value="Abnormal">Abnormal</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardAction>
       </CardHeader>
       <CardContent>
         {!canRead && <p className="text-sm text-muted-foreground">You don't have access to machine data.</p>}
