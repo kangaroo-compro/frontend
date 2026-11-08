@@ -24,7 +24,7 @@ export function UserPill() {
         <button
           type="button"
           aria-label="User menu"
-          className="flex cursor-pointer items-center gap-3 rounded-full border bg-muted/40 py-1.5 pl-2 pr-3 shadow-2xs outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:bg-muted"
+          className="flex cursor-pointer items-center gap-3 rounded-full bg-muted/40 py-1.5 pl-2 pr-3 shadow-2xs outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:bg-muted"
         >
           <Avatar className="size-8 border bg-muted">
             <AvatarFallback className="bg-muted-foreground/20 text-xs font-semibold text-foreground">
