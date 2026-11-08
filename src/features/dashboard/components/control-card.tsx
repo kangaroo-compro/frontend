@@ -41,15 +41,18 @@ const REASONS: Record<string, string> = {
 }
 
 /** What the card tells the user about the command that was sent. */
-function outcomeOf(ack: CommandAck | undefined, timedOut: boolean): { text: string; failed: boolean } {
+function outcomeOf(
+  ack: CommandAck | undefined,
+  timedOut: boolean,
+): { text: string; tone: 'success' | 'warning' | 'danger' } {
   if (ack && isFinalAck(ack)) {
-    if (ack.result === 'EXECUTED') return { text: 'Done', failed: false }
+    if (ack.result === 'EXECUTED') return { text: 'Done', tone: 'success' }
     const why = ack.reason ? (REASONS[ack.reason] ?? ack.reason) : ''
-    return { text: `${ack.result === 'REJECTED' ? 'Rejected' : 'Failed'}${why ? `: ${why}` : ''}`, failed: true }
+    return { text: `${ack.result === 'REJECTED' ? 'Rejected' : 'Failed'}${why ? `: ${why}` : ''}`, tone: 'danger' }
   }
-  if (timedOut) return { text: 'No response from the machine', failed: true }
-  if (ack) return { text: 'Accepted, waiting for the machine', failed: false }
-  return { text: 'Sent, waiting for the machine', failed: false }
+  if (timedOut) return { text: 'No response from the machine', tone: 'danger' }
+  if (ack) return { text: 'Accepted, waiting for the machine', tone: 'warning' }
+  return { text: 'Sent, waiting for the machine', tone: 'warning' }
 }
 
 export function ControlCard({ machine, status, acks }: ControlCardProps) {
@@ -128,9 +131,13 @@ export function ControlCard({ machine, status, acks }: ControlCardProps) {
           </p>
         )}
         {outcome && (
-          <p role="status" className={`text-xs ${outcome.failed ? 'text-destructive' : 'text-foreground'}`}>
+          <Badge
+            role="status"
+            variant={outcome.tone}
+            className="h-auto w-fit max-w-full whitespace-normal rounded-xl px-2.5 py-1 text-left text-xs font-normal"
+          >
             {outcome.text}
-          </p>
+          </Badge>
         )}
 
         <div className="space-y-1">
