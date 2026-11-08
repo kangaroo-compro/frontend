@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { PAGE_SIZE_OPTIONS } from '@/hooks/use-page-size'
 import {
   Pagination,
   PaginationContent,
@@ -38,6 +40,9 @@ type Props<T> = {
   meta?: TableMeta
   page: number
   onPageChange: (page: number) => void
+  /** With both, the pager shows "Rows per page". The owner resets to page 1 and refetches. */
+  pageSize?: number
+  onPageSizeChange?: (size: number) => void
 }
 
 export function DataTable<T>({
@@ -48,7 +53,10 @@ export function DataTable<T>({
   meta,
   page,
   onPageChange,
+  pageSize,
+  onPageSizeChange,
 }: Props<T>) {
+  const sizeLabelId = useId()
   const totalPages = meta ? Math.ceil(meta.total / meta.limit) : 1
   const startPage = Math.max(1, Math.min(page - 1, totalPages - 2))
 
@@ -95,7 +103,27 @@ export function DataTable<T>({
       </Table>
 
       {meta && meta.total > 0 && (
-        <Pagination>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          {pageSize !== undefined && onPageSizeChange ? (
+            <div className="flex items-center gap-2 text-sm">
+              <span id={sizeLabelId}>Rows per page</span>
+              <Select value={String(pageSize)} onValueChange={(v) => onPageSizeChange(Number(v))}>
+                <SelectTrigger size="sm" aria-labelledby={sizeLabelId} className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <span />
+          )}
+        <Pagination className="w-auto">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
@@ -181,6 +209,7 @@ export function DataTable<T>({
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+        </div>
       )}
     </div>
   )

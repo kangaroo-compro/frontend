@@ -11,6 +11,7 @@ import { PERMISSIONS } from '@/features/accounts/permissions'
 import { ConfirmDeleteDialog } from '@/features/accounts/components/confirm-delete-dialog'
 import { useCan } from '@/features/auth/access'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { usePageSize } from '@/hooks/use-page-size'
 import { errorMessage } from '@/lib/api'
 import { NO_VALUE } from '@/lib/format'
 import { deleteMachine, listMachines } from '../api'
@@ -18,7 +19,6 @@ import { DATA_PATH_LABELS, type Machine } from '../types'
 import { MachineDialog } from './machine-dialog'
 import { ConnectivityBadge, ControlBadge } from './status-badges'
 
-const PAGE_SIZE = 10
 const SEARCH_DEBOUNCE_MS = 300
 
 export function MachineList() {
@@ -28,14 +28,15 @@ export function MachineList() {
   const canDelete = useCan(PERMISSIONS.machineDelete)
 
   const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = usePageSize('machines', 10)
   const [search, setSearch] = useState('')
   const debounced = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
   const [editing, setEditing] = useState<Machine | 'new' | null>(null)
   const [deleting, setDeleting] = useState<Machine | null>(null)
 
   const machines = useQuery({
-    queryKey: ['machines', 'list', page, debounced],
-    queryFn: () => listMachines(PAGE_SIZE, (page - 1) * PAGE_SIZE, debounced),
+    queryKey: ['machines', 'list', page, debounced, pageSize],
+    queryFn: () => listMachines(pageSize, (page - 1) * pageSize, debounced),
     placeholderData: keepPreviousData,
   })
 
@@ -121,6 +122,11 @@ export function MachineList() {
             meta={machines.data.meta}
             page={page}
             onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setPage(1)
+            }}
           />
         )}
       </CardContent>

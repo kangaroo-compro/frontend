@@ -11,8 +11,6 @@ import type { TelemetryRow } from '@/features/telemetry/types'
 import { formatReading } from '@/lib/format'
 import type { Params } from './history-filters'
 
-export const HISTORY_PAGE_SIZE = 20
-
 type Props = {
   machine: Machine
   params: Params
@@ -20,11 +18,13 @@ type Props = {
   meta?: PageMeta
   page: number
   onPageChange: (page: number) => void
+  pageSize: number
+  onPageSizeChange: (size: number) => void
   loading: boolean
   error?: string
 }
 
-export function HistoryTable({ machine, params, rows, meta, page, onPageChange, loading, error }: Props) {
+export function HistoryTable({ machine, params, rows, meta, page, onPageChange, pageSize, onPageSizeChange, loading, error }: Props) {
   const columns: Column<TelemetryRow>[] = [
     { key: 'time', header: 'Time', cell: (r) => format(new Date(r.recorded_at), 'dd/MM/yyyy HH:mm:ss') },
     { key: 'machine', header: 'Machine', cell: () => machine.name },
@@ -68,6 +68,8 @@ export function HistoryTable({ machine, params, rows, meta, page, onPageChange, 
             meta={meta}
             page={page}
             onPageChange={onPageChange}
+            pageSize={pageSize}
+            onPageSizeChange={onPageSizeChange}
           />
         )}
       </CardContent>

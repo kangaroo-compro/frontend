@@ -6,9 +6,10 @@ import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
 import { HistoryChart } from '@/features/history/components/history-chart'
 import { HistoryFilters, type HistoryFilter, type Params } from '@/features/history/components/history-filters'
-import { HISTORY_PAGE_SIZE, HistoryTable } from '@/features/history/components/history-table'
+import { HistoryTable } from '@/features/history/components/history-table'
 import { listMachines } from '@/features/machines/api'
 import { telemetryRange, telemetrySeries, telemetrySummary } from '@/features/telemetry/api'
+import { usePageSize } from '@/hooks/use-page-size'
 import { errorMessage } from '@/lib/api'
 import { formatReading } from '@/lib/format'
 
@@ -35,6 +36,7 @@ export function HistoryPage() {
   const [draft, setDraft] = useState<HistoryFilter>({ machineId: '', ...initial })
   const [applied, setApplied] = useState<HistoryFilter | null>(null)
   const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = usePageSize('history', 20)
 
   const shownDraft = { ...draft, machineId: draft.machineId || first?.id || '' }
   const active = applied ?? (first ? { machineId: first.id, ...initial } : null)
@@ -53,8 +55,8 @@ export function HistoryPage() {
     enabled: range !== null,
   })
   const table = useQuery({
-    queryKey: ['history', 'table', key, page],
-    queryFn: () => telemetryRange(range!.deviceId, range!.from, range!.to, HISTORY_PAGE_SIZE, (page - 1) * HISTORY_PAGE_SIZE),
+    queryKey: ['history', 'table', key, page, pageSize],
+    queryFn: () => telemetryRange(range!.deviceId, range!.from, range!.to, pageSize, (page - 1) * pageSize),
     enabled: range !== null,
     placeholderData: keepPreviousData,
   })
@@ -129,6 +131,11 @@ export function HistoryPage() {
                 meta={table.data?.meta}
                 page={page}
                 onPageChange={setPage}
+                pageSize={pageSize}
+                onPageSizeChange={(size) => {
+                  setPageSize(size)
+                  setPage(1)
+                }}
                 loading={table.isPending}
                 error={table.isError ? errorMessage(table.error) : undefined}
               />

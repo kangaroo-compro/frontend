@@ -10,22 +10,23 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { usePageSize } from '@/hooks/use-page-size'
 import { errorMessage } from '@/lib/api'
 import { listUsers } from '../api'
 import type { User } from '../types'
 
-const PAGE_SIZE = 10
 const SEARCH_DEBOUNCE_MS = 300
 
 export function UserList() {
   const canCreate = useCan(PERMISSIONS.userCreate)
   const [page, setPage] = React.useState(1)
+  const [pageSize, setPageSize] = usePageSize('users', 10)
   const [search, setSearch] = React.useState('')
   const debounced = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
 
   const users = useQuery({
-    queryKey: ['users', page, debounced],
-    queryFn: () => listUsers(PAGE_SIZE, (page - 1) * PAGE_SIZE, debounced),
+    queryKey: ['users', page, debounced, pageSize],
+    queryFn: () => listUsers(pageSize, (page - 1) * pageSize, debounced),
     placeholderData: keepPreviousData,
   })
 
@@ -89,6 +90,11 @@ export function UserList() {
             meta={users.data.meta}
             page={page}
             onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setPage(1)
+            }}
           />
         )}
       </CardContent>

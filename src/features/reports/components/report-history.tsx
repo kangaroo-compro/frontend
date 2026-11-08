@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { usePageSize } from '@/hooks/use-page-size'
 import { errorMessage } from '@/lib/api'
 import { formatBytes } from '@/lib/format'
 import { listReports, reportDownloadUrl } from '../api'
@@ -20,7 +21,6 @@ import { useReportEvents } from '../hooks/use-report-events'
 import type { Report } from '../types'
 import * as React from 'react'
 
-const PAGE_SIZE = 10
 const SEARCH_DEBOUNCE_MS = 300
 
 const TYPE_LABEL = { machine_condition: 'Machine condition', full_sensor_data: 'Full sensor data' } as const
@@ -43,12 +43,13 @@ export function ReportHistory() {
 
   const canGenerate = useCan(PERMISSIONS.reportGenerate)
   const [page, setPage] = React.useState(1)
+  const [pageSize, setPageSize] = usePageSize('reports', 10)
   const [search, setSearch] = React.useState('')
   const debounced = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
 
   const reports = useQuery({
-    queryKey: ['reports', page, debounced],
-    queryFn: () => listReports(PAGE_SIZE, (page - 1) * PAGE_SIZE, debounced),
+    queryKey: ['reports', page, debounced, pageSize],
+    queryFn: () => listReports(pageSize, (page - 1) * pageSize, debounced),
     placeholderData: keepPreviousData,
   })
 
@@ -157,6 +158,11 @@ export function ReportHistory() {
             meta={reports.data.meta}
             page={page}
             onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setPage(1)
+            }}
           />
         )}
       </CardContent>
