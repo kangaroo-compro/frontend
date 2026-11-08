@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ChevronDown, LogOut, User } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -24,7 +24,7 @@ export function UserPill() {
         <button
           type="button"
           aria-label="User menu"
-          className="flex cursor-pointer items-center gap-3 rounded-full py-1.5 pl-2 pr-3 outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:bg-muted"
+          className="flex cursor-pointer items-center gap-3 py-1.5 pl-2 pr-3 outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <Avatar className="size-8 border bg-muted">
             <AvatarFallback className="bg-muted-foreground/20 text-xs font-semibold text-foreground">
@@ -32,10 +32,9 @@ export function UserPill() {
             </AvatarFallback>
           </Avatar>
           <span className="flex flex-col text-left leading-tight">
-            <span className="text-[11px] text-muted-foreground">{me.data?.role_name ?? NO_VALUE} :</span>
             <span className="text-xs font-semibold text-foreground">{me.data?.name ?? NO_VALUE}</span>
+            <span className="text-[11px] text-muted-foreground">{me.data?.role_name ?? NO_VALUE}</span>
           </span>
-          <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
