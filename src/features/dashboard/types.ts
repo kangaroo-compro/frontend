@@ -1,4 +1,4 @@
-import type { MachineStatus, Readings } from '@/features/telemetry/types'
+import type { MachineStatus } from '@/features/telemetry/types'
 
 /** One reading of the machine on screen; a value the payload lacked is undefined. */
 export type CompressorSample = {
@@ -10,6 +10,3 @@ export type CompressorSample = {
 }
 
 export type ConnectionState = 'connecting' | 'live' | 'reconnecting' | 'offline'
-
-/** The newest reading of one machine and when the Manager received it (epoch ms). */
-export type LatestReading = { readings: Readings; at: number }
