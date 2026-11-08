@@ -4,7 +4,6 @@ import {
   FileText,
   History,
   LayoutDashboard,
-  LogOut,
   Radio,
   ShieldCheck,
   Users,
@@ -23,10 +22,8 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { Button } from '@/components/ui/button'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
-import { signOutEverywhere } from '@/features/auth/session'
 
 const monitoringItems = [
   {
@@ -156,17 +153,9 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4 group-data-[collapsible=icon]:p-2">
-        <SidebarTrigger className="mx-auto hidden group-data-[collapsible=icon]:inline-flex" />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => signOutEverywhere()}
-          className="w-full justify-start gap-2 rounded-lg text-xs font-medium group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
-        >
-          <LogOut className="size-4" />
-          <span className="group-data-[collapsible=icon]:hidden">Sign Out</span>
-        </Button>
+      {/* Only holds the expand trigger of the collapsed sidebar; sign out lives in the user menu. */}
+      <SidebarFooter className="hidden border-t group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:p-2">
+        <SidebarTrigger className="mx-auto" />
       </SidebarFooter>
 
       <SidebarRail />
