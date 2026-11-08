@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { PERMISSIONS } from '@/features/accounts/permissions'
-import { getMe } from '@/features/auth/api'
 import { useCan } from '@/features/auth/access'
 import { EnergyCard } from '@/features/dashboard/components/energy-card'
 import { MachineTable } from '@/features/dashboard/components/machine-table'
@@ -69,8 +67,6 @@ export function DashboardPage() {
     onGateway: () => void queryClient.invalidateQueries({ queryKey: ['machines', 'overview'] }),
   })
 
-  const me = useQuery({ queryKey: ['me'], queryFn: getMe, staleTime: Infinity })
-
   const conditions = (list ?? []).map((m) => {
     const reading = latest[m.device_id]
     return reading ? condition(reading.readings, m.thresholds) : null
@@ -83,20 +79,8 @@ export function DashboardPage() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <header className="flex flex-wrap items-center justify-between gap-4">
+      <header>
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Dashboard</h1>
-
-        <div className="flex items-center gap-3 rounded-full border bg-muted/40 py-1.5 pl-2 pr-4 shadow-2xs">
-          <Avatar className="size-8 border bg-muted">
-            <AvatarFallback className="bg-muted-foreground/20 text-xs font-semibold text-foreground">
-              {me.data ? initials(me.data.name) : '—'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col text-left leading-tight">
-            <span className="text-[11px] text-muted-foreground">{me.data?.role_name ?? '—'} :</span>
-            <span className="text-xs font-semibold text-foreground">{me.data?.name ?? '—'}</span>
-          </div>
-        </div>
       </header>
 
       <OverviewStats
@@ -120,13 +104,4 @@ export function DashboardPage() {
       />
     </div>
   )
-}
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('')
 }
