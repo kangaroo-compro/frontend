@@ -3,6 +3,7 @@ import { RequireAuth } from '@/features/auth/components/require-auth'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LoginPage } from '@/pages/login-page'
 import { DashboardPage } from '@/pages/dashboard-page'
+import { MachineDetailPage } from '@/pages/machine-detail-page'
 import { MonitoringPage } from '@/pages/monitoring-page'
 import { ReportNewPage } from '@/pages/report-new-page'
 import { ReportPage } from '@/pages/report-page'
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/dashboard/:machineId', element: <MachineDetailPage /> },
           { path: '/monitoring', element: <MonitoringPage /> },
           { path: '/history', element: <DashboardPage /> },
           { path: '/report', element: <ReportPage /> },
