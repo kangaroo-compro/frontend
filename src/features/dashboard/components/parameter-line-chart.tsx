@@ -17,6 +17,8 @@ interface ParameterLineChartProps {
   points: Point[]
   unit: string
   windowMs?: number
+  /** Right edge of the time axis (epoch ms); defaults to the last point. */
+  endMs?: number
   /** The machine's threshold max; drawn as the dashed limit line when set and inside the Y range. */
   limit?: number
   yMin?: number
@@ -50,6 +52,7 @@ export function ParameterLineChart({
   points,
   unit,
   windowMs,
+  endMs,
   limit,
   yMin: customMin,
   yMax: customMax,
@@ -71,7 +74,7 @@ export function ParameterLineChart({
   }, [])
 
   const last = points.at(-1)
-  const end = last?.t ?? 0
+  const end = endMs ?? last?.t ?? 0
   const duration = windowMs ?? Math.max(end - (points[0]?.t ?? end), 60_000)
   const start = end - duration
 
