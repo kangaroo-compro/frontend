@@ -3,7 +3,6 @@ import { ArrowLeft } from 'lucide-react'
 import { PERMISSIONS } from '@/features/accounts/permissions'
 import { useCan } from '@/features/auth/access'
 import { ReportForm } from '@/features/reports/components/report-form'
-import { ReportPreview } from '@/features/reports/components/report-preview'
 
 export function ReportNewPage() {
   const canGenerate = useCan(PERMISSIONS.reportGenerate)
@@ -19,7 +18,6 @@ export function ReportNewPage() {
       {canGenerate ? (
         <div className="grid items-start gap-6 lg:grid-cols-2">
           <ReportForm />
-          <ReportPreview />
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">You don't have access to this page.</p>

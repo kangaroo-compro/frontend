@@ -14,18 +14,20 @@ import { errorMessage } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { listMachines } from '@/features/machines/api'
 import { createReport } from '../api'
+import { periodError } from '../period'
 import type { ReportFormat, ReportType } from '../types'
 import { DateTimePicker } from './date-picker'
+import { ReportPreview } from './report-preview'
 
 const TYPES: { value: ReportType; title: string; description: string }[] = [
   {
     value: 'machine_condition',
-    title: 'Machine condition report',
-    description: 'Summary of minimum, maximum, and average values plus abnormal events per machine.',
+    title: 'Machine Condition (summary, one row per machine)',
+    description: 'Minimum, maximum, and average values plus abnormal events per machine. It does not list every reading.',
   },
   {
     value: 'full_sensor_data',
-    title: 'Full sensor data',
+    title: 'Full Sensor Data (every reading)',
     description: 'All readings in chronological order for further analysis.',
   },
 ]
@@ -43,17 +45,9 @@ const RANGES = [
   { key: '30d', label: '30 days', ms: 30 * 24 * HOUR },
 ] as const
 
-const MAX_PERIOD_MS = 31 * 24 * HOUR
-
 function rangeEndingNow(ms: number) {
   const now = new Date()
   return { from: new Date(now.getTime() - ms), to: now }
-}
-
-function periodError(from: Date, to: Date): string | null {
-  if (to <= from) return 'The end must be after the start.'
-  if (to.getTime() - from.getTime() > MAX_PERIOD_MS) return 'A report can span at most 31 days.'
-  return null
 }
 
 export function ReportForm() {
@@ -105,7 +99,9 @@ export function ReportForm() {
     create.mutate()
   }
 
+  // The card and the live preview are two grid cells of the page, so they come back as siblings.
   return (
+    <>
     <Card>
       <CardContent>
         <form onSubmit={onSubmit} className="flex flex-col gap-6">
@@ -252,9 +248,6 @@ export function ReportForm() {
             <Button type="button" variant="outline" onClick={() => navigate('/report')} disabled={create.isPending}>
               Cancel
             </Button>
-            <Button type="button" variant="outline" disabled title="Preview is not available yet">
-              Refresh preview
-            </Button>
             <Button type="submit" disabled={create.isPending || selected.length === 0 || invalidPeriod !== null}>
               <Download /> {create.isPending ? 'Queuing…' : 'Generate report'}
             </Button>
@@ -262,5 +255,7 @@ export function ReportForm() {
         </form>
       </CardContent>
     </Card>
+    <ReportPreview type={type} machines={all} selectedIds={selected} from={range.from} to={range.to} />
+    </>
   )
 }
