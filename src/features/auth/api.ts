@@ -1,4 +1,5 @@
 import { api, type Envelope } from '@/lib/api'
+import type { User } from '@/features/users/types'
 import type { Session } from './store'
 
 type SessionResponse = {
@@ -41,6 +42,11 @@ export function refreshSession(refreshToken: string): Promise<Session> {
     refreshing.set(refreshToken, pending)
   }
   return pending
+}
+
+export async function getMe(): Promise<User> {
+  const { data } = await api.get<Envelope<User>>('/me')
+  return data.data
 }
 
 export async function logout(refreshToken: string): Promise<void> {

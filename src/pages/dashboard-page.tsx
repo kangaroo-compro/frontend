@@ -1,97 +1,132 @@
 import { useState } from 'react'
-import { Activity, Power, Thermometer, Zap } from 'lucide-react'
+import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { DeviceOverviewCard } from '@/features/dashboard/components/device-overview-card'
-import { MetricCard } from '@/features/dashboard/components/metric-card'
-import { ControlCard } from '@/features/dashboard/components/control-card'
-import { ParameterChartsSection } from '@/features/dashboard/components/parameter-charts-section'
-import { useCompressorTelemetry } from '@/features/dashboard/hooks/use-compressor-telemetry'
+import { PERMISSIONS } from '@/features/accounts/permissions'
+import { getMe } from '@/features/auth/api'
+import { useCan } from '@/features/auth/access'
+import { EnergyCard } from '@/features/dashboard/components/energy-card'
+import { MachineTable } from '@/features/dashboard/components/machine-table'
+import { OverviewStats } from '@/features/dashboard/components/overview-stats'
+import type { LatestReading } from '@/features/dashboard/types'
+import { useManagerSocket } from '@/features/live/use-manager-socket'
+import { condition } from '@/features/machines/condition'
+import { listMachines } from '@/features/machines/api'
+import { latestEnergy, latestTelemetry, parseEnergy, parseReadings } from '@/features/telemetry/api'
+import type { EnergyRow, TelemetryRow } from '@/features/telemetry/types'
+import { errorMessage } from '@/lib/api'
+
+const MACHINES_REFRESH_MS = 15_000
+
+function toLatest(row: TelemetryRow): LatestReading {
+  return { readings: parseReadings(row.payload), at: Date.parse(row.recorded_at) }
+}
 
 export function DashboardPage() {
-  const [selectedDevice, setSelectedDevice] = useState('compressor-1')
-  const { state, samples, latest } = useCompressorTelemetry(selectedDevice)
+  const queryClient = useQueryClient()
+  const canReadMachines = useCan(PERMISSIONS.machineRead)
 
-  const temperatureDisplay = latest ? `${latest.temperature}°C` : '68°C'
-  const machineStatusDisplay = latest ? latest.status : 'ON'
-  const voltageDisplay = latest ? `${latest.voltage} V` : '381 V'
-  const ampereDisplay = latest ? `${latest.ampere} A` : '24.5 A'
+  // Connectivity is computed by the Manager (15 s freshness + gateway state): poll, and refetch on a gateway frame.
+  const machines = useQuery({
+    queryKey: ['machines', 'overview'],
+    queryFn: () => listMachines(200, 0).then((page) => page.machines),
+    enabled: canReadMachines,
+    refetchInterval: MACHINES_REFRESH_MS,
+  })
+  const list = machines.data
+
+  // Latest reading per machine: seeded once from the newest stored/buffered row, then replaced by live frames.
+  const seeds = useQueries({
+    queries: (list ?? []).map((m) => ({
+      queryKey: ['telemetry', 'latest', m.device_id],
+      queryFn: () => latestTelemetry(m.device_id, 1),
+      staleTime: Infinity,
+    })),
+  })
+  const [live, setLive] = useState<Record<string, LatestReading>>({})
+  const latest: Record<string, LatestReading> = {}
+  ;(list ?? []).forEach((m, i) => {
+    const row = seeds[i]?.data?.[0]
+    const seeded = row ? toLatest(row) : undefined
+    const current = live[m.device_id]
+    const newest = current && (!seeded || current.at >= seeded.at) ? current : seeded
+    if (newest) latest[m.device_id] = newest
+  })
+
+  // Panel energy: seeded once, then live.
+  const energySeed = useQuery({ queryKey: ['energy', 'latest'], queryFn: () => latestEnergy(1), staleTime: Infinity })
+  const [liveEnergy, setLiveEnergy] = useState<EnergyRow>()
+  const seededEnergy = energySeed.data?.[0]
+  const energyRow =
+    liveEnergy && (!seededEnergy || Date.parse(liveEnergy.recorded_at) >= Date.parse(seededEnergy.recorded_at))
+      ? liveEnergy
+      : seededEnergy
+
+  useManagerSocket({
+    devices: '*',
+    energy: true,
+    onTelemetry: (row) => setLive((prev) => ({ ...prev, [row.device_id]: toLatest(row) })),
+    onEnergy: setLiveEnergy,
+    onGateway: () => void queryClient.invalidateQueries({ queryKey: ['machines', 'overview'] }),
+  })
+
+  const me = useQuery({ queryKey: ['me'], queryFn: getMe, staleTime: Infinity })
+
+  const conditions = (list ?? []).map((m) => {
+    const reading = latest[m.device_id]
+    return reading ? condition(reading.readings, m.thresholds) : null
+  })
+  const counts = list && {
+    normal: conditions.filter((c) => c === 'Normal').length,
+    abnormal: conditions.filter((c) => c === 'Abnormal').length,
+    disconnected: list.filter((m) => m.status === 'disconnected').length,
+  }
 
   return (
     <div className="flex w-full flex-col gap-6">
-      {/* Top Header Bar */}
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Dashboard
-          </h1>
-        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Dashboard</h1>
 
-        {/* Technician Profile Pill */}
         <div className="flex items-center gap-3 rounded-full border bg-muted/40 py-1.5 pl-2 pr-4 shadow-2xs">
           <Avatar className="size-8 border bg-muted">
             <AvatarFallback className="bg-muted-foreground/20 text-xs font-semibold text-foreground">
-              JD
+              {me.data ? initials(me.data.name) : '—'}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col text-left leading-tight">
-            <span className="text-[11px] text-muted-foreground">Technicians :</span>
-            <span className="text-xs font-semibold text-foreground">John Doe</span>
+            <span className="text-[11px] text-muted-foreground">{me.data?.role_name ?? '—'} :</span>
+            <span className="text-xs font-semibold text-foreground">{me.data?.name ?? '—'}</span>
           </div>
         </div>
       </header>
 
-      {/* Device Overview Card */}
-      <section aria-label="Device summary" className="w-full">
-        <DeviceOverviewCard
-          selectedDevice={selectedDevice}
-          onSelectDevice={setSelectedDevice}
-          connectionState={state}
-          machineStatus={latest?.status ?? 'ON'}
-        />
-      </section>
+      <OverviewStats
+        total={list?.length}
+        normal={counts?.normal}
+        abnormal={counts?.abnormal}
+        disconnected={counts?.disconnected}
+      />
 
-      {/* Middle Row: 2x2 Metric Tiles + ON/OFF Control */}
-      <section aria-label="Machine metrics and control" className="grid grid-cols-1 gap-4 lg:grid-cols-3 w-full">
-        {/* Left: 2x2 Metric Tiles */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2">
-          <MetricCard
-            icon={<Thermometer className="size-4" />}
-            label="Temperature"
-            value={temperatureDisplay}
-            statusBadge="Normal"
-            showMore
-          />
-          <MetricCard
-            icon={<Power className="size-4" />}
-            label="Machine status"
-            value={machineStatusDisplay}
-            subtext="Since 08:02 AM"
-          />
-          <MetricCard
-            icon={<Zap className="size-4" />}
-            label="Volt"
-            value={voltageDisplay}
-            statusBadge="Normal"
-            showMore
-          />
-          <MetricCard
-            icon={<Activity className="size-4" />}
-            label="Ampere"
-            value={ampereDisplay}
-            statusBadge="Normal"
-          />
-        </div>
+      <MachineTable
+        machines={list}
+        latest={latest}
+        canRead={canReadMachines}
+        loading={machines.isPending && canReadMachines}
+        error={machines.isError ? errorMessage(machines.error) : undefined}
+      />
 
-        {/* Right: ON/OFF Control */}
-        <div className="lg:col-span-1">
-          <ControlCard status={latest?.status ?? 'ON'} />
-        </div>
-      </section>
-
-      {/* Bottom Section: Parameter Charts (Full width, interactive SVG with WebSocket live stream) */}
-      <section aria-label="Parameter Charts" className="w-full">
-        <ParameterChartsSection samples={samples} />
-      </section>
+      <EnergyCard
+        reading={energyRow ? parseEnergy(energyRow.payload) : undefined}
+        updatedAt={energyRow ? Date.parse(energyRow.recorded_at) : undefined}
+      />
     </div>
   )
+}
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
 }
