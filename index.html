@@ -5,6 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>frontend</title>
+    <script>
+      // Apply the saved theme (else the system one) before React renders, so there is no flash. Same logic as src/features/theme/use-theme.ts.
+      ;(function () {
+        var theme = null
+        try {
+          theme = localStorage.getItem('theme')
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        }
+        document.documentElement.classList.toggle('dark', theme === 'dark')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
