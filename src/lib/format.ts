@@ -31,6 +31,15 @@ export function formatDuration(seconds: number): string {
   return `${s}s`
 }
 
+/** What the screen shows for a value that has not been read. */
+export const NO_VALUE = '—'
+
+/** 72.456 -> "72.5 °C"; undefined -> "—". The unit is left out when there is no value. */
+export function formatReading(value: number | null | undefined, unit = '', digits = 1): string {
+  if (value === undefined || value === null) return NO_VALUE
+  return `${Number(value.toFixed(digits))}${unit ? ` ${unit}` : ''}`
+}
+
 export function formatClock(epochMs: number): string {
   return new Date(epochMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
