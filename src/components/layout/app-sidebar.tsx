@@ -76,6 +76,7 @@ export function AppSidebar() {
   const canReadReports = useCan(PERMISSIONS.report)
   const canReadHistory = useCan(PERMISSIONS.history)
   const canReadUsers = useCan(PERMISSIONS.userRead)
+  const canReadMachines = useCan(PERMISSIONS.machineRead)
   const visibleMonitoring = monitoringItems.filter((item) => {
     if (item.url === '/report') return canReadReports
     if (item.url === '/history') return canReadHistory
@@ -84,6 +85,7 @@ export function AppSidebar() {
   const visibleSettings = settingsItems.filter((item) => {
     if (item.url === '/users') return canReadUsers
     if (item.url === '/role') return canReadRoles
+    if (item.url === '/manage-machine') return canReadMachines
     return true
   })
 

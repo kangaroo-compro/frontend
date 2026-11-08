@@ -5,6 +5,7 @@ import { LoginPage } from '@/pages/login-page'
 import { DashboardPage } from '@/pages/dashboard-page'
 import { HistoryPage } from '@/pages/history-page'
 import { MachineDetailPage } from '@/pages/machine-detail-page'
+import { MachinesPage } from '@/pages/machines-page'
 import { MonitoringPage } from '@/pages/monitoring-page'
 import { ReportNewPage } from '@/pages/report-new-page'
 import { ReportPage } from '@/pages/report-page'
@@ -26,7 +27,7 @@ export const router = createBrowserRouter([
           { path: '/history', element: <HistoryPage /> },
           { path: '/report', element: <ReportPage /> },
           { path: '/report/new', element: <ReportNewPage /> },
-          { path: '/manage-machine', element: <DashboardPage /> },
+          { path: '/manage-machine', element: <MachinesPage /> },
           { path: '/profile', element: <DashboardPage /> },
           { path: '/role', element: <RolesPage /> },
           { path: '/users', element: <UsersPage /> },
