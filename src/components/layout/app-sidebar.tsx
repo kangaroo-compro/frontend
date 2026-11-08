@@ -82,7 +82,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="flex flex-row items-center justify-between border-b p-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2">
+      {/* h-16 on purpose: the app bar next to it is h-16 too, so the two bottom borders sit on one line. */}
+      <SidebarHeader className="h-16 shrink-0 flex-row items-center justify-between gap-0 border-b px-4 py-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
         <Link to="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-foreground">
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Radio className="size-4" aria-hidden />
