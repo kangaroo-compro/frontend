@@ -1,0 +1,156 @@
+<svg width="640" height="520" viewBox="0 0 640 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="heroCardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22288A" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#4750C9" stop-opacity="0.03" />
+    </linearGradient>
+
+    <linearGradient id="mainCardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F9F8FE" />
+    </linearGradient>
+
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F58FF" stop-opacity="0.1" />
+      <stop offset="50%" stop-color="#4F58FF" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#D66BFF" stop-opacity="0.2" />
+    </linearGradient>
+
+    <linearGradient id="blueAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F58FF" />
+      <stop offset="100%" stop-color="#22288A" />
+    </linearGradient>
+
+    <linearGradient id="purpleAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D66BFF" />
+      <stop offset="100%" stop-color="#8049FF" />
+    </linearGradient>
+
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="125%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#22288A" flood-opacity="0.08" />
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Grid pattern -->
+    <pattern id="gridPattern" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#ECEBFA" stroke-width="1.2" />
+      <circle cx="0" cy="0" r="1.5" fill="#4750C9" fill-opacity="0.25" />
+    </pattern>
+  </defs>
+
+  <!-- Decorative ambient glows -->
+  <circle cx="160" cy="140" r="140" fill="#4F58FF" fill-opacity="0.07" filter="url(#glow)" />
+  <circle cx="480" cy="380" r="160" fill="#D66BFF" fill-opacity="0.06" filter="url(#glow)" />
+
+  <!-- Background grid layer -->
+  <rect x="40" y="30" width="560" height="460" rx="32" fill="url(#gridPattern)" opacity="0.85" />
+  <rect x="40" y="30" width="560" height="460" rx="32" stroke="#ECEBFA" stroke-width="2" />
+
+  <!-- Main Central Telemetry Dashboard Window -->
+  <g filter="url(#softShadow)">
+    <rect x="90" y="75" width="460" height="370" rx="24" fill="url(#mainCardBg)" stroke="#ECEBFA" stroke-width="1.5" />
+
+    <!-- Window Header -->
+    <rect x="90" y="75" width="460" height="52" rx="24" fill="#FFFFFF" />
+    <path d="M 90 127 L 550 127" stroke="#ECEBFA" stroke-width="1.5" />
+    
+    <!-- Window Controls -->
+    <circle cx="120" cy="101" r="5" fill="#FF5F56" />
+    <circle cx="138" cy="101" r="5" fill="#FFBD2E" />
+    <circle cx="156" cy="101" r="5" fill="#27C93F" />
+
+    <!-- Window Title -->
+    <text x="320" y="105" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#22288A" letter-spacing="0.5">
+      PERUM PERURI · TELEMETRY MONITORING
+    </text>
+
+    <!-- Status pill on header right -->
+    <rect x="445" y="90" width="85" height="22" rx="11" fill="#E8F8EE" />
+    <circle cx="457" cy="101" r="3.5" fill="#12A150" />
+    <text x="490" y="105" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#12A150">
+      ONLINE
+    </text>
+
+    <!-- Stat Card 1: Machine Speed (RPM) -->
+    <rect x="115" y="145" width="130" height="88" rx="14" fill="#FFFFFF" stroke="#ECEBFA" stroke-width="1.2" />
+    <text x="130" y="167" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#6B6F8D">SPEED RATE</text>
+    <text x="130" y="196" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#22288A">1,450</text>
+    <text x="186" y="196" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#6B6F8D">RPM</text>
+    <rect x="130" y="209" width="48" height="14" rx="7" fill="#ECEBFA" />
+    <text x="154" y="219" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#4750C9">+4.2%</text>
+
+    <!-- Stat Card 2: Temperature -->
+    <rect x="255" y="145" width="130" height="88" rx="14" fill="#FFFFFF" stroke="#ECEBFA" stroke-width="1.2" />
+    <text x="270" y="167" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#6B6F8D">TEMPERATURE</text>
+    <text x="270" y="196" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#22288A">64.8</text>
+    <text x="316" y="196" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#6B6F8D">°C</text>
+    <rect x="270" y="209" width="56" height="14" rx="7" fill="#E8F8EE" />
+    <text x="298" y="219" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#12A150">OPTIMAL</text>
+
+    <!-- Stat Card 3: Quality Yield -->
+    <rect x="395" y="145" width="130" height="88" rx="14" fill="#FFFFFF" stroke="#ECEBFA" stroke-width="1.2" />
+    <text x="410" y="167" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#6B6F8D">EFFICIENCY</text>
+    <text x="410" y="196" font-family="system-ui, sans-serif" font-size="20" font-weight="700" fill="#4750C9">99.4</text>
+    <text x="456" y="196" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#4750C9">%</text>
+    <rect x="410" y="209" width="58" height="14" rx="7" fill="#F0EEFD" />
+    <text x="439" y="219" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" font-weight="600" fill="#4750C9">VERIFIED</text>
+
+    <!-- Telemetry Graph Chart Area -->
+    <rect x="115" y="247" width="410" height="175" rx="16" fill="#FFFFFF" stroke="#ECEBFA" stroke-width="1.2" />
+    <text x="135" y="274" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#22288A">
+      Real-Time Pressure &amp; Vibration Telemetry
+    </text>
+    <text x="135" y="290" font-family="system-ui, sans-serif" font-size="10" font-weight="500" fill="#6B6F8D">
+      Live sensor stream across 6 production nodes
+    </text>
+
+    <!-- Chart Grid Lines -->
+    <line x1="135" y1="315" x2="505" y2="315" stroke="#F1F0FB" stroke-width="1" stroke-dasharray="3 3" />
+    <line x1="135" y1="345" x2="505" y2="345" stroke="#F1F0FB" stroke-width="1" stroke-dasharray="3 3" />
+    <line x1="135" y1="375" x2="505" y2="375" stroke="#F1F0FB" stroke-width="1" stroke-dasharray="3 3" />
+    <line x1="135" y1="405" x2="505" y2="405" stroke="#ECEBFA" stroke-width="1" />
+
+    <!-- Gradient Wave Fill Area -->
+    <path d="M 135 385 Q 180 340 225 360 T 315 325 T 405 345 T 485 305 L 485 405 L 135 405 Z" fill="url(#pulseGrad)" />
+
+    <!-- Wave 1 (Navy / Blue) -->
+    <path d="M 135 385 Q 180 340 225 360 T 315 325 T 405 345 T 485 305" fill="none" stroke="#4F58FF" stroke-width="2.5" stroke-linecap="round" />
+
+    <!-- Wave 2 (Violet / Magenta) -->
+    <path d="M 135 395 Q 180 375 225 380 T 315 350 T 405 365 T 485 330" fill="none" stroke="#D66BFF" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
+
+    <!-- Graph Highlight Data Points -->
+    <circle cx="315" cy="325" r="5" fill="#FFFFFF" stroke="#4F58FF" stroke-width="2.5" />
+    <circle cx="485" cy="305" r="5" fill="#FFFFFF" stroke="#D66BFF" stroke-width="2.5" />
+
+    <!-- Data tooltip badge over point -->
+    <g transform="translate(275, 290)">
+      <rect x="0" y="0" width="80" height="24" rx="6" fill="#22288A" />
+      <path d="M 40 24 L 37 28 L 43 28 Z" fill="#22288A" />
+      <text x="40" y="16" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF">
+        3.42 BAR · OK
+      </text>
+    </g>
+  </g>
+
+  <!-- Floating Decorative Badges -->
+  <g transform="translate(60, 290)" filter="url(#softShadow)">
+    <rect width="110" height="42" rx="12" fill="#FFFFFF" stroke="#ECEBFA" stroke-width="1.2" />
+    <circle cx="20" cy="21" r="8" fill="#ECEBFA" />
+    <path d="M 16 21 L 19 24 L 25 18" stroke="#4750C9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="36" y="19" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#22288A">Secured</text>
+    <text x="36" y="31" font-family="system-ui, sans-serif" font-size="8" font-weight="500" fill="#6B6F8D">Peruri Standard</text>
+  </g>
+
+  <g transform="translate(480, 105)" filter="url(#softShadow)">
+    <rect width="110" height="42" rx="12" fill="#FFFFFF" stroke="#ECEBFA" stroke-width="1.2" />
+    <circle cx="20" cy="21" r="8" fill="#E8F8EE" />
+    <circle cx="20" cy="21" r="4" fill="#12A150" />
+    <text x="36" y="19" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#22288A">Sensors Live</text>
+    <text x="36" y="31" font-family="system-ui, sans-serif" font-size="8" font-weight="500" fill="#12A150">Active Stream</text>
+  </g>
+</svg>

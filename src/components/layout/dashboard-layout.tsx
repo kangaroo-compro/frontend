@@ -17,7 +17,7 @@ export function DashboardLayout() {
             <SidebarTrigger className="md:hidden" />
             <div className="flex items-center gap-2 md:hidden">
               <img src={logo} alt="Perum Peruri" className="h-8 w-auto max-w-[120px] object-contain rounded bg-white px-1.5 py-0.5" />
-              <span className="text-sm font-semibold tracking-tight">Kangaroo Compro</span>
+              <span className="text-sm font-semibold tracking-tight">Telemetry Monitoring</span>
             </div>
             <div className="ml-auto flex items-center gap-2 md:ml-0">
               <ThemeToggle />
