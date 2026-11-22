@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import logo from '@/assets/logo.png'
 import {
   Cpu,
   FileText,
@@ -85,10 +86,16 @@ export function AppSidebar() {
       {/* h-16 on purpose: the app bar next to it is h-16 too, so the two bottom borders sit on one line. */}
       <SidebarHeader className="h-16 shrink-0 flex-row items-center justify-between gap-0 border-b px-4 py-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
         <Link to="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-foreground">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="flex items-center group-data-[collapsible=icon]:hidden">
+            <img
+              src={logo}
+              alt="Perum Peruri"
+              className="h-11 w-auto max-w-[155px] object-contain rounded-md bg-white px-2 py-0.5"
+            />
+          </div>
+          <div className="hidden size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground group-data-[collapsible=icon]:flex">
             <Radio className="size-4" aria-hidden />
           </div>
-          <span className="text-lg font-bold group-data-[collapsible=icon]:hidden">LOGO</span>
         </Link>
         <SidebarTrigger className="group-data-[collapsible=icon]:hidden" />
       </SidebarHeader>

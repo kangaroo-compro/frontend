@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { UserPill } from '@/features/auth/components/user-pill'
 import { ThemeToggle } from '@/features/theme/theme-toggle'
+import logo from '@/assets/logo.png'
 
 export function DashboardLayout() {
   return (
@@ -14,7 +15,10 @@ export function DashboardLayout() {
           {/* Top bar: the sidebar toggle and title on mobile, the profile pill on every page */}
           <header className="flex h-16 shrink-0 items-center gap-3 border-b px-4 md:justify-end md:px-6 lg:px-8">
             <SidebarTrigger className="md:hidden" />
-            <span className="text-sm font-semibold tracking-tight md:hidden">Kangaroo Compro</span>
+            <div className="flex items-center gap-2 md:hidden">
+              <img src={logo} alt="Perum Peruri" className="h-8 w-auto max-w-[120px] object-contain rounded bg-white px-1.5 py-0.5" />
+              <span className="text-sm font-semibold tracking-tight">Kangaroo Compro</span>
+            </div>
             <div className="ml-auto flex items-center gap-2 md:ml-0">
               <ThemeToggle />
               <UserPill />
