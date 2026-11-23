@@ -1,5 +1,5 @@
 import { api, type Envelope } from '@/lib/api'
-import type { User, UserListResponse } from './types'
+import type { CreateUserInput, UpdateUserPatch, User, UserListResponse } from './types'
 
 export async function listUsers(
   limit = 10,
@@ -16,4 +16,28 @@ export async function listUsers(
     data: data.data,
     meta: data.meta,
   }
+}
+
+export async function createUser(input: CreateUserInput): Promise<User> {
+  const { data } = await api.post<Envelope<User>>('/users', input)
+  return data.data
+}
+
+export async function updateUser(id: string, patch: UpdateUserPatch): Promise<User> {
+  const { data } = await api.patch<Envelope<User>>(`/users/${id}`, patch)
+  return data.data
+}
+
+export async function updateUserStatus(id: string, status: number): Promise<User> {
+  const { data } = await api.patch<Envelope<User>>(`/users/${id}/status`, { status })
+  return data.data
+}
+
+export async function toggleUserStatus(id: string): Promise<User> {
+  const { data } = await api.post<Envelope<User>>(`/users/${id}/toggle-status`)
+  return data.data
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await api.delete(`/users/${id}`)
 }

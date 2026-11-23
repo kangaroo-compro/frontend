@@ -5,6 +5,7 @@ import { AppSidebar } from '@/components/layout/app-sidebar'
 import { UserPill } from '@/features/auth/components/user-pill'
 import { ThemeToggle } from '@/features/theme/theme-toggle'
 import logo from '@/assets/logo.png'
+import logoWhite from '@/assets/logo-white.webp'
 
 export function DashboardLayout() {
   return (
@@ -16,7 +17,8 @@ export function DashboardLayout() {
           <header className="flex h-16 shrink-0 items-center gap-3 border-b px-4 md:justify-end md:px-6 lg:px-8">
             <SidebarTrigger className="md:hidden" />
             <div className="flex items-center gap-2 md:hidden">
-              <img src={logo} alt="Perum Peruri" className="h-8 w-auto max-w-[120px] object-contain rounded bg-white px-1.5 py-0.5" />
+              <img src={logo} alt="Perum Peruri" className="dark:hidden h-8 w-auto max-w-[120px] object-contain rounded bg-white px-1.5 py-0.5" />
+              <img src={logoWhite} alt="Perum Peruri" className="hidden dark:block h-8 w-auto max-w-[120px] object-contain px-1 py-0.5" />
               <span className="text-sm font-semibold tracking-tight">Telemetry Monitoring</span>
             </div>
             <div className="ml-auto flex items-center gap-2 md:ml-0">

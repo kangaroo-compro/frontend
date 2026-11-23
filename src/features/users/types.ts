@@ -4,6 +4,7 @@ export type User = {
   name: string
   role_id: string
   role_name: string
+  status: number
   created_at: string
   updated_at: string
 }
@@ -15,4 +16,20 @@ export type UserListResponse = {
     offset: number
     total: number
   }
+}
+
+export type CreateUserInput = {
+  email: string
+  name: string
+  password: string
+  role_id: string
+  status?: number
+}
+
+export type UpdateUserPatch = {
+  email?: string
+  name?: string
+  password?: string
+  role_id?: string
+  status?: number
 }

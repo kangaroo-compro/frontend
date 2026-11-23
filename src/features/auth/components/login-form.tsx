@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { errorMessage } from '@/lib/api'
 import logo from '@/assets/logo.png'
+import logoWhite from '@/assets/logo-white.webp'
 import { login } from '../api'
 import { useAuthStore } from '../store'
 
@@ -32,11 +33,16 @@ export function LoginForm() {
   return (
     <div className="mx-auto w-full max-w-sm">
       <div className="flex flex-col items-center text-center mb-6">
-        <div className="p-2.5 rounded-xl bg-white shadow-xs border border-border/50 inline-flex items-center justify-center mb-3">
+        <div className="p-2.5 rounded-xl bg-white dark:bg-card shadow-xs border border-border/50 inline-flex items-center justify-center mb-3">
           <img
             src={logo}
             alt="Perum Peruri"
-            className="h-12 w-auto max-w-[160px] object-contain"
+            className="dark:hidden h-12 w-auto max-w-[160px] object-contain"
+          />
+          <img
+            src={logoWhite}
+            alt="Perum Peruri"
+            className="hidden dark:block h-12 w-auto max-w-[160px] object-contain"
           />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">

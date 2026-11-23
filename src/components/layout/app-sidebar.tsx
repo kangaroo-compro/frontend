@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import logo from '@/assets/logo.png'
+import logoWhite from '@/assets/logo-white.webp'
 import {
   Cpu,
   FileText,
@@ -90,7 +91,12 @@ export function AppSidebar() {
             <img
               src={logo}
               alt="Perum Peruri"
-              className="h-11 w-auto max-w-[155px] object-contain rounded-md bg-white px-2 py-0.5"
+              className="dark:hidden h-11 w-auto max-w-[155px] object-contain rounded-md bg-white px-2 py-0.5"
+            />
+            <img
+              src={logoWhite}
+              alt="Perum Peruri"
+              className="hidden dark:block h-11 w-auto max-w-[155px] object-contain px-1 py-0.5"
             />
           </div>
           <div className="hidden size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground group-data-[collapsible=icon]:flex">
