@@ -1,10 +1,18 @@
 import { useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
 import { IconButton } from '@/components/icon-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PERMISSIONS } from '@/features/accounts/permissions'
@@ -67,20 +75,40 @@ export function MachineList() {
     {
       key: 'actions',
       header: 'Action',
-      cell: (m) => (
-        <div className="flex gap-1">
-          {canUpdate && (
-            <IconButton label={`Edit ${m.name}`} variant="ghost" onClick={() => setEditing(m)}>
-              <Pencil />
-            </IconButton>
-          )}
-          {canDelete && (
-            <IconButton label={`Delete ${m.name}`} variant="ghost" onClick={() => setDeleting(m)}>
-              <Trash2 />
-            </IconButton>
-          )}
-        </div>
-      ),
+      className: 'w-20',
+      cell: (m) => {
+        const hasAnyAction = canUpdate || canDelete
+        if (!hasAnyAction) return null
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              {canUpdate && (
+                <DropdownMenuItem onClick={() => setEditing(m)}>
+                  <Pencil className="mr-2 size-4" />
+                  Edit
+                </DropdownMenuItem>
+              )}
+              {canUpdate && canDelete && <DropdownMenuSeparator />}
+              {canDelete && (
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => setDeleting(m)}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
     },
   ]
 

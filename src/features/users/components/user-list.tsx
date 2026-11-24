@@ -97,68 +97,67 @@ export function UserList() {
     },
     {
       key: 'actions',
-      header: '',
+      header: 'Action',
+      className: 'w-20',
       cell: (user) => {
         const hasAnyAction = canUpdate || canDelete
         if (!hasAnyAction) return null
 
         return (
-          <div className="flex justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                {canUpdate && (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setSelectedUser(user)
-                        setDialogOpen(true)
-                      }}
-                    >
-                      <Pencil className="mr-2 size-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => toggleMutation.mutate(user.id)}
-                      disabled={toggleMutation.isPending}
-                    >
-                      {user.status === 1 ? (
-                        <>
-                          <UserX className="mr-2 size-4" />
-                          Deactivate
-                        </>
-                      ) : (
-                        <>
-                          <UserCheck className="mr-2 size-4" />
-                          Activate
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {canDelete && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
-                      onClick={() => {
-                        setUserToDelete(user)
-                        setDeleteError(null)
-                      }}
-                    >
-                      <Trash2 className="mr-2 size-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              {canUpdate && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setSelectedUser(user)
+                      setDialogOpen(true)
+                    }}
+                  >
+                    <Pencil className="mr-2 size-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => toggleMutation.mutate(user.id)}
+                    disabled={toggleMutation.isPending}
+                  >
+                    {user.status === 1 ? (
+                      <>
+                        <UserX className="mr-2 size-4" />
+                        Deactivate
+                      </>
+                    ) : (
+                      <>
+                        <UserCheck className="mr-2 size-4" />
+                        Activate
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                </>
+              )}
+              {canDelete && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onClick={() => {
+                      setUserToDelete(user)
+                      setDeleteError(null)
+                    }}
+                  >
+                    <Trash2 className="mr-2 size-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         )
       },
     },
