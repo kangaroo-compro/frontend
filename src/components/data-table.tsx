@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PAGE_SIZE_OPTIONS } from '@/hooks/use-page-size'
 import {
@@ -43,6 +44,10 @@ type Props<T> = {
   /** With both, the pager shows "Rows per page". The owner resets to page 1 and refetches. */
   pageSize?: number
   onPageSizeChange?: (size: number) => void
+  className?: string
+  tableWrapperClassName?: string
+  stickyHeader?: boolean
+  footerExtra?: ReactNode
 }
 
 export function DataTable<T>({
@@ -55,6 +60,10 @@ export function DataTable<T>({
   onPageChange,
   pageSize,
   onPageSizeChange,
+  className,
+  tableWrapperClassName,
+  stickyHeader,
+  footerExtra,
 }: Props<T>) {
   const sizeLabelId = useId()
   const totalPages = meta ? Math.ceil(meta.total / meta.limit) : 1
@@ -66,9 +75,9 @@ export function DataTable<T>({
   )
 
   return (
-    <div className="flex flex-col gap-3">
-      <Table>
-        <TableHeader>
+    <div className={cn("flex flex-col gap-3", className)}>
+      <Table containerClassName={tableWrapperClassName}>
+        <TableHeader className={stickyHeader ? "sticky top-0 bg-card z-10 border-b shadow-2xs" : undefined}>
           <TableRow>
             {columns.map((c) => (
               <TableHead key={c.key} className={c.className}>
@@ -101,6 +110,8 @@ export function DataTable<T>({
           )}
         </TableBody>
       </Table>
+
+      {footerExtra}
 
       {meta && meta.total > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3">

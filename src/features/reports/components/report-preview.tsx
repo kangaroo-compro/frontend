@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { DataTable, type Column } from '@/components/data-table'
+import { DataTable, type Column, type TableMeta } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -10,14 +11,13 @@ import type { Machine } from '@/features/machines/types'
 import { parseReadings, telemetryRange, telemetrySummary } from '@/features/telemetry/api'
 import type { TelemetryRow, TelemetrySummary } from '@/features/telemetry/types'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { usePageSize } from '@/hooks/use-page-size'
 import { errorMessage } from '@/lib/api'
 import { formatReading } from '@/lib/format'
 import { periodError } from '../period'
 import type { ReportType } from '../types'
 
 const DEBOUNCE_MS = 400
-const SAMPLE_ROWS = 20
-const noop = () => {}
 
 type Props = {
   type: ReportType
@@ -29,28 +29,60 @@ type Props = {
 }
 
 type Preview =
-  | { kind: 'summary'; rows: { machine: Machine; summary: TelemetrySummary }[] }
-  | { kind: 'readings'; rows: { machine: Machine; row: TelemetryRow }[]; total: number }
+  | { kind: 'summary'; rows: { machine: Machine; summary: TelemetrySummary }[]; meta: TableMeta }
+  | { kind: 'readings'; rows: { machine: Machine; row: TelemetryRow }[]; meta: TableMeta }
 
 const noMachine = (r: { machine: Machine }) => r.machine.id
 
 /** Fetches what the report will contain, from the existing stored-data endpoints. */
-async function loadPreview(type: ReportType, machines: Machine[], from: Date, to: Date): Promise<Preview> {
+async function loadPreview(
+  type: ReportType,
+  machines: Machine[],
+  from: Date,
+  to: Date,
+  page: number,
+  pageSize: number,
+): Promise<Preview> {
+  const offset = (page - 1) * pageSize
+
   if (type === 'machine_condition') {
-    const rows = await Promise.all(
+    const all = await Promise.all(
       machines.map(async (machine) => ({ machine, summary: await telemetrySummary(machine.device_id, from, to) })),
     )
-    return { kind: 'summary', rows }
+    return {
+      kind: 'summary',
+      rows: all.slice(offset, offset + pageSize),
+      meta: { limit: pageSize, offset, total: all.length },
+    }
   }
-  // Newest rows per machine, merged and cut to the first SAMPLE_ROWS by time.
+
+  if (machines.length === 1 && machines[0]) {
+    const machine = machines[0]
+    const pageResult = await telemetryRange(machine.device_id, from, to, pageSize, offset)
+    return {
+      kind: 'readings',
+      rows: pageResult.rows.map((row) => ({ machine, row })),
+      meta: pageResult.meta,
+    }
+  }
+
+  // Multiple machines: query range for each, sort combined rows newest first, and take page slice
   const pages = await Promise.all(
-    machines.map(async (machine) => ({ machine, page: await telemetryRange(machine.device_id, from, to, SAMPLE_ROWS, 0) })),
+    machines.map(async (machine) => ({
+      machine,
+      page: await telemetryRange(machine.device_id, from, to, pageSize, offset),
+    })),
   )
   const rows = pages
-    .flatMap(({ machine, page }) => page.rows.map((row) => ({ machine, row })))
+    .flatMap(({ machine, page: p }) => p.rows.map((row) => ({ machine, row })))
     .sort((a, b) => Date.parse(b.row.recorded_at) - Date.parse(a.row.recorded_at))
-    .slice(0, SAMPLE_ROWS)
-  return { kind: 'readings', rows, total: pages.reduce((sum, p) => sum + p.page.meta.total, 0) }
+    .slice(0, pageSize)
+  const total = pages.reduce((sum, p) => sum + p.page.meta.total, 0)
+  return {
+    kind: 'readings',
+    rows,
+    meta: { limit: pageSize, offset, total },
+  }
 }
 
 const stat = (v: number | null, digits = 1) => formatReading(v, '', digits)
@@ -84,22 +116,42 @@ const readingColumns: Column<{ machine: Machine; row: TelemetryRow }>[] = [
 
 /** Live preview next to the form, refreshed 400 ms after the machines, type or period stop changing. */
 export function ReportPreview({ type, machines, selectedIds, from, to }: Props) {
-  const wanted = useDebouncedValue(JSON.stringify([type, selectedIds, from.toISOString(), to.toISOString()]), DEBOUNCE_MS)
-  const [wantedType, wantedIds, wantedFrom, wantedTo] = JSON.parse(wanted) as [ReportType, string[], string, string]
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = usePageSize('report-preview', 10)
+
+  const wanted = useDebouncedValue(
+    JSON.stringify([type, selectedIds, from.toISOString(), to.toISOString()]),
+    DEBOUNCE_MS,
+  )
+  const [wantedType, wantedIds, wantedFrom, wantedTo] = JSON.parse(wanted) as [
+    ReportType,
+    string[],
+    string,
+    string,
+  ]
+
+  const [prevWanted, setPrevWanted] = useState(wanted)
+  if (prevWanted !== wanted) {
+    setPrevWanted(wanted)
+    setPage(1)
+  }
+
   const chosen = machines.filter((m) => wantedIds.includes(m.id))
   const problem = periodError(new Date(wantedFrom), new Date(wantedTo))
 
   const preview = useQuery({
-    queryKey: ['report-preview', wanted],
-    queryFn: () => loadPreview(wantedType, chosen, new Date(wantedFrom), new Date(wantedTo)),
+    queryKey: ['report-preview', wanted, page, pageSize],
+    queryFn: () => loadPreview(wantedType, chosen, new Date(wantedFrom), new Date(wantedTo), page, pageSize),
     enabled: chosen.length > 0 && problem === null,
   })
 
   const data = preview.data
-  const empty = data && (data.kind === 'summary' ? data.rows.every((r) => r.summary.count === 0) : data.rows.length === 0)
+  const empty =
+    data &&
+    (data.kind === 'summary' ? data.rows.every((r) => r.summary.count === 0) : data.meta.total === 0)
 
   return (
-    <Card>
+    <Card className="flex flex-col min-w-0">
       <CardHeader>
         <CardTitle className="text-lg font-bold tracking-tight">Report Preview</CardTitle>
       </CardHeader>
@@ -114,26 +166,64 @@ export function ReportPreview({ type, machines, selectedIds, from, to }: Props) 
         )}
         {empty && <p className="text-sm text-muted-foreground">No data in this period</p>}
         {data && !empty && data.kind === 'summary' && (
-          <DataTable data={data.rows} columns={summaryColumns} rowKey={noMachine} empty="" page={1} onPageChange={noop} />
+          <DataTable
+            data={data.rows}
+            columns={summaryColumns}
+            rowKey={noMachine}
+            empty=""
+            meta={data.meta}
+            page={page}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize)
+              setPage(1)
+            }}
+            tableWrapperClassName="max-h-[380px] sm:max-h-[440px] overflow-auto rounded-md border"
+            stickyHeader
+            footerExtra={
+              <div className="flex flex-wrap items-center justify-between gap-1 text-xs text-muted-foreground">
+                <span>
+                  Showing {data.meta.total === 0 ? 0 : data.meta.offset + 1}–
+                  {Math.min(data.meta.offset + data.rows.length, data.meta.total)} of {data.meta.total} machines
+                </span>
+                <span>Preview of stored data. Readings from the last 15 minutes may not be included yet.</span>
+              </div>
+            }
+          />
         )}
         {data && !empty && data.kind === 'readings' && (
-          <>
-            <DataTable
-              data={data.rows}
-              columns={readingColumns}
-              rowKey={(r) => `${r.machine.id}-${r.row.recorded_at}`}
-              empty=""
-              page={1}
-              onPageChange={noop}
-            />
-            <p className="text-xs text-muted-foreground">
-              Showing {data.rows.length} of {data.total} readings
-            </p>
-          </>
+          <DataTable
+            data={data.rows}
+            columns={readingColumns}
+            rowKey={(r) => `${r.machine.id}-${r.row.recorded_at}`}
+            empty=""
+            meta={data.meta}
+            page={page}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize)
+              setPage(1)
+            }}
+            tableWrapperClassName="max-h-[380px] sm:max-h-[440px] overflow-auto rounded-md border"
+            stickyHeader
+            footerExtra={
+              <div className="flex flex-wrap items-center justify-between gap-1 text-xs text-muted-foreground">
+                <span>
+                  Showing {data.meta.total === 0 ? 0 : data.meta.offset + 1}–
+                  {Math.min(data.meta.offset + data.rows.length, data.meta.total)} of {data.meta.total} readings
+                </span>
+                <span>Preview of stored data. Readings from the last 15 minutes may not be included yet.</span>
+              </div>
+            }
+          />
         )}
-        <p className="text-xs text-muted-foreground">
-          Preview of stored data. Readings from the last 15 minutes may not be included yet.
-        </p>
+        {(!data || empty) && (
+          <p className="text-xs text-muted-foreground">
+            Preview of stored data. Readings from the last 15 minutes may not be included yet.
+          </p>
+        )}
       </CardContent>
     </Card>
   )
