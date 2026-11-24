@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
 import { PERMISSIONS } from '@/features/accounts/permissions'
@@ -7,8 +8,9 @@ import { useCan } from '@/features/auth/access'
 import { HistoryChart } from '@/features/history/components/history-chart'
 import { HistoryFilters, type HistoryFilter, type Params } from '@/features/history/components/history-filters'
 import { HistoryTable } from '@/features/history/components/history-table'
+import { downloadCsv, telemetryToCsv } from '@/features/history/export-csv'
 import { listMachines } from '@/features/machines/api'
-import { telemetryRange, telemetrySeries, telemetrySummary } from '@/features/telemetry/api'
+import { exportTelemetry, telemetryRange, telemetrySeries, telemetrySummary } from '@/features/telemetry/api'
 import { usePageSize } from '@/hooks/use-page-size'
 import { errorMessage } from '@/lib/api'
 import { formatReading } from '@/lib/format'
@@ -37,6 +39,8 @@ export function HistoryPage() {
   const [applied, setApplied] = useState<HistoryFilter | null>(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = usePageSize('history', 20)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportError, setExportError] = useState<string | null>(null)
 
   const shownDraft = { ...draft, machineId: draft.machineId || first?.id || '' }
   const active = applied ?? (first ? { machineId: first.id, ...initial } : null)
@@ -64,6 +68,22 @@ export function HistoryPage() {
   function apply() {
     setApplied(shownDraft)
     setPage(1)
+  }
+
+  async function handleExport() {
+    if (!range || !machine || !active) return
+    try {
+      setIsExporting(true)
+      setExportError(null)
+      const allRows = await exportTelemetry(range.deviceId, range.from, range.to)
+      const safeName = machine.name.replace(/[^a-zA-Z0-9_-]/g, '_')
+      const filename = `${safeName}_${format(range.from, 'yyyyMMdd_HHmm')}_${format(range.to, 'yyyyMMdd_HHmm')}.csv`
+      downloadCsv(filename, telemetryToCsv(machine, allRows, active.params))
+    } catch (err) {
+      setExportError(errorMessage(err))
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const stats = summary.data
@@ -112,6 +132,11 @@ export function HistoryPage() {
               <AlertDescription>{errorMessage(summary.error)}</AlertDescription>
             </Alert>
           )}
+          {exportError && (
+            <Alert variant="destructive">
+              <AlertDescription>{exportError}</AlertDescription>
+            </Alert>
+          )}
 
           {active && machine && (
             <>
@@ -138,6 +163,8 @@ export function HistoryPage() {
                 }}
                 loading={table.isPending}
                 error={table.isError ? errorMessage(table.error) : undefined}
+                onExport={handleExport}
+                isExporting={isExporting}
               />
             </>
           )}

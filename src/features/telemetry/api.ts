@@ -63,6 +63,18 @@ export async function telemetryRange(
   return { rows: data.data, meta: data.meta }
 }
 
+/** All stored rows in [from, to] for export, oldest first. */
+export async function exportTelemetry(
+  deviceId: string,
+  from: Date,
+  to: Date,
+): Promise<TelemetryRow[]> {
+  const { data } = await api.get<Envelope<TelemetryRow[]>>(`/devices/${deviceId}/telemetry/export`, {
+    params: { from: from.toISOString(), to: to.toISOString() },
+  })
+  return data.data
+}
+
 export async function telemetrySummary(deviceId: string, from: Date, to: Date): Promise<TelemetrySummary> {
   const { data } = await api.get<Envelope<TelemetrySummary>>(`/devices/${deviceId}/telemetry/summary`, {
     params: { from: from.toISOString(), to: to.toISOString() },

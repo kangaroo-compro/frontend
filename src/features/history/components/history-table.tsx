@@ -1,7 +1,9 @@
 import { format } from 'date-fns'
+import { Download } from 'lucide-react'
 import { DataTable, type Column } from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { condition } from '@/features/machines/condition'
 import { ConditionBadge, MachineStatusBadge } from '@/features/machines/components/status-badges'
@@ -22,9 +24,24 @@ type Props = {
   onPageSizeChange: (size: number) => void
   loading: boolean
   error?: string
+  onExport?: () => void
+  isExporting?: boolean
 }
 
-export function HistoryTable({ machine, params, rows, meta, page, onPageChange, pageSize, onPageSizeChange, loading, error }: Props) {
+export function HistoryTable({
+  machine,
+  params,
+  rows,
+  meta,
+  page,
+  onPageChange,
+  pageSize,
+  onPageSizeChange,
+  loading,
+  error,
+  onExport,
+  isExporting,
+}: Props) {
   const columns: Column<TelemetryRow>[] = [
     { key: 'time', header: 'Time', cell: (r) => format(new Date(r.recorded_at), 'dd/MM/yyyy HH:mm:ss') },
     { key: 'machine', header: 'Machine', cell: () => machine.name },
@@ -51,6 +68,20 @@ export function HistoryTable({ machine, params, rows, meta, page, onPageChange, 
     <Card>
       <CardHeader>
         <CardTitle className="text-lg font-bold tracking-tight">Data Table</CardTitle>
+        {onExport && (
+          <CardAction>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onExport}
+              disabled={isExporting || loading || !meta || meta.total === 0}
+            >
+              <Download className="mr-1.5 size-4" />
+              {isExporting ? 'Exporting…' : 'Export'}
+            </Button>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent>
         {loading && !rows && <Skeleton className="h-40 w-full" />}
